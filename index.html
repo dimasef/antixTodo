@@ -8,7 +8,22 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
 </head>
 <body>
-    
-<script src="main.js"></script>
+    <div class="main">
+        <h1>Список задач</h1>
+        <button id="show-addNewTask-form" class="btn-green-style">Добавить новую</button>
+    </div>
+    <div class="addNewTask-form none" id="addNewTask-form" >
+        <h3>Новая ежедневная задача</h3>
+        <textarea placeholder="Описание задачи"></textarea>
+        <input type="text" placeholder="Время выполнения">
+        <select>
+            <option value="1">мин</option>
+            <option value="2">часы</option>
+        </select>
+        <div>
+            <button id="add-new-task" class="btn-green-style">Добавить</button>
+        </div>
+    </div>
+<script src="js/main.js"></script>
 </body>
 </html>
