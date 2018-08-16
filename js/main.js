@@ -2,13 +2,45 @@
 
 let btnNewTask = document.getElementById("show-addNewTask-form");
 let addNewTask = document.getElementById("add-new-task");
+let taskList = document.getElementById("task-list");
 
 let tasks = [];
+
 
 if(localStorage.getItem("antixTasks") !== null) {
     tasks = JSON.parse(localStorage.getItem("antixTasks"));
     let lastTask = tasks[Object.keys(tasks)[Object.keys(tasks).length - 1]];
-    document.getElementById("addNewTask-form").dataset.id = lastTask.id;
+    document.getElementById("addNewTask-form").dataset.id = lastTask.id++;
+    showTakList(tasks);
+
+    let taskStatusInputs = document.querySelectorAll(".task-status");
+    taskStatusInputs.forEach((value) => {
+        value.onchange = () => {
+            let chengedID = value.id;
+            tasks.forEach((newValue) => {
+                if(typeof newValue === 'object') {
+                    if (newValue.id == chengedID)
+                        newValue.doneStatus = value.checked;
+                }
+            });
+            localStorage.setItem('antixTasks', JSON.stringify(tasks));
+        }
+    });
+}
+
+//функция вывода тасков 
+function showTakList (takListObj) {
+    takListObj.forEach((value) => {
+        if(typeof value === 'object') {
+            taskList.innerHTML += `<div class="task-block" data-id="${value.id}">
+                <div class="task-status-block">
+                    <input id="${value.id}" type="checkbox" class="task-status" ${value.doneStatus ? 'checked' : ''}>
+                </div>
+                <div class="task-text">${value.text}</div>
+                <span>Время которое необходимо затратить: ${value.time}</span>
+            </div>`;
+        }
+    });
 }
 
 let getCarrentDate = () => {
@@ -27,6 +59,8 @@ let getCarrentDate = () => {
     return today;
 
 }; 
+
+
 
 let validateNewTastk = () => {
     let newTaskTest = document.getElementById("task-text").value,

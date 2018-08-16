@@ -8,20 +8,25 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
 </head>
 <body>
-    <div class="main">
-        <h1>Список задач</h1>
-        <button id="show-addNewTask-form" class="btn-green-style">Добавить новую</button>
-    </div>
-    <div class="addNewTask-form none" id="addNewTask-form" data-id="1">
-        <h3>Новая ежедневная задача</h3>
-        <textarea id="task-text" placeholder="Описание задачи"></textarea>
-        <input id="task-time" type="text" placeholder="Время выполнения">
-        <select id="task-time-unit">
-            <option value="1">мин</option>
-            <option value="2">часы</option>
-        </select>
-        <div>
-            <button id="add-new-task" class="btn-green-style">Добавить</button>
+    <div class="application">
+        <div class="main">
+            <h1>Список задач</h1>
+            <button id="show-addNewTask-form" class="btn-green-style">Добавить новую</button>
+            <div class="taskList" id="task-list">
+
+            </div>
+        </div>
+        <div class="addNewTask-form none" id="addNewTask-form" data-id="1">
+            <h3>Новая ежедневная задача</h3>
+            <textarea id="task-text" placeholder="Описание задачи"></textarea>
+            <input id="task-time" type="text" placeholder="Время выполнения">
+            <select id="task-time-unit">
+                <option value="1">мин</option>
+                <option value="2">часы</option>
+            </select>
+            <div>
+                <button id="add-new-task" class="btn-green-style">Добавить</button>
+            </div>
         </div>
     </div>
 <script src="js/main.js"></script>
