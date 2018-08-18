@@ -22,6 +22,7 @@ if(window.openDatabase) {
                 showTakList(tasks);
             }
             let taskStatusInputs = document.querySelectorAll(".task-status");
+            let taskRemove = document.querySelectorAll(".removeTask");
             taskStatusInputs.forEach((value) => {
                 value.onchange = () => {
                     let chengedID = value.id;
@@ -29,6 +30,22 @@ if(window.openDatabase) {
                         if (tasks.item(i).id == chengedID) {
                             db.transaction((tx) => {
                                 tx.executeSql('UPDATE task SET doneStatus=? WHERE id=?', [+value.checked, tasks.item(i).id]);
+                            }); 
+                        }
+                    }
+                }
+            });
+            taskRemove.forEach((value) => {
+                value.onclick = () => {
+                    let chengedID = value.dataset.id;
+                    console.log(chengedID);
+                    for (let i = 0; i < tasks.length; i++) { 
+                        if (tasks.item(i).id == chengedID) {
+                            db.transaction((tx) => {
+                                tx.executeSql('DELETE FROM task WHERE id=?', [tasks.item(i).id]);
+                                tx.executeSql('SELECT * FROM task;',[], (sqlTransaction, sqlResultSet) => {
+                                    showTakList(sqlResultSet.rows);
+                                });
                             }); 
                         }
                     }
@@ -42,6 +59,7 @@ if(window.openDatabase) {
     //функция вывода тасков 
     function showTakList (takListObj) {
         let value;
+        console.log(takListObj);
         taskList.innerHTML = '';
         for (let i = 0; i < takListObj.length; i++) {
             value = takListObj.item(i);
@@ -51,8 +69,10 @@ if(window.openDatabase) {
                 </div>
                 <div class="task-text">${value.text}</div>
                 <span>Время которое необходимо затратить: ${value.time}</span>
+                <span data-id="${value.id}" class="removeTask">&times;</span>
             </div>`;
         }
+        console.log("showed");
     }
 
     let getCarrentDate = () => {
