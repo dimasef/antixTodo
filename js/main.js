@@ -1,13 +1,13 @@
 "use strict";
 
-let btnNewTask = document.getElementById("show-addNewTask-form");
-let addNewTask = document.getElementById("add-new-task");
-let taskList = document.getElementById("task-list");
+const btnNewTask = document.getElementById("show-addNewTask-form");
+const addNewTask = document.getElementById("add-new-task");
+const taskList = document.getElementById("task-list");
 
 let tasks = {};
 
 if(window.openDatabase) {
-    let db = openDatabase("antiXToDodb","","db", 2097152);
+    const db = openDatabase("antiXToDodb","","db", 2097152);
     
     db.transaction((tx) => {
    
@@ -76,7 +76,7 @@ if(window.openDatabase) {
     }; 
 
     let validateNewTastk = () => {
-        let newTaskTest = document.getElementById("task-text").value,
+        const newTaskTest = document.getElementById("task-text").value,
             newTaskTime = document.getElementById("task-time").value,
             newTaskTimeUit = document.getElementById("task-time-unit").value;
         if (newTaskTest.length != 0 && newTaskTime.length != 0)
@@ -85,18 +85,21 @@ if(window.openDatabase) {
     };
 
     btnNewTask.onclick = () => {
-        let addNewTaskForm = document.getElementById("addNewTask-form");
+        const addNewTaskForm = document.getElementById("addNewTask-form");
         addNewTaskForm.classList.toggle("none");
     };
 
     addNewTask.onclick = () => {
         if(validateNewTastk()) {
-            let addNewTaskForm = document.getElementById("addNewTask-form");
+            let taskTime = document.getElementById("task-time").value;
+            const btnT = document.getElementById("task-time-unit"),
+                  addNewTaskForm = document.getElementById("addNewTask-form");
+
+            taskTime = (btnT.options[btnT.selectedIndex].value === '1') ? taskTime : taskTime * 60;
             db.transaction((tx) => {
                 tx.executeSql('INSERT INTO task (id, date, text, time, doneStatus) VALUES(?,?,?,?,?);', [addNewTaskForm.dataset.id, 
-                getCarrentDate(), document.getElementById("task-text").value, document.getElementById("task-time").value, 0]);
+                getCarrentDate(), document.getElementById("task-text").value, taskTime, 0]);
                 addNewTask.dataset.id = addNewTaskForm.dataset.id++;
-
                 showTakList();
             });
         } else {
