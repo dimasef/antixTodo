@@ -11,68 +11,51 @@ if(window.openDatabase) {
     
     db.transaction((tx) => {
    
-        tx.executeSql('CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY , date, text, time, doneStatus);');
-
-        tx.executeSql('SELECT * FROM task;',[], (sqlTransaction, sqlResultSet) => {
-    
-            tasks = sqlResultSet.rows;
-            if(tasks.length) {
-                let lastTask = tasks[Object.keys(tasks)[Object.keys(tasks).length - 1]];
-                document.getElementById("addNewTask-form").dataset.id = lastTask.id++;
-                showTakList(tasks);
-            }
-            let taskStatusInputs = document.querySelectorAll(".task-status");
-            let taskRemove = document.querySelectorAll(".removeTask");
-            taskStatusInputs.forEach((value) => {
-                value.onchange = () => {
-                    let chengedID = value.id;
-                    for (let i = 0; i < tasks.length; i++) { 
-                        if (tasks.item(i).id == chengedID) {
-                            db.transaction((tx) => {
-                                tx.executeSql('UPDATE task SET doneStatus=? WHERE id=?', [+value.checked, tasks.item(i).id]);
-                            }); 
-                        }
-                    }
-                }
-            });
-            taskRemove.forEach((value) => {
-                value.onclick = () => {
-                    let chengedID = value.dataset.id;
-                    console.log(chengedID);
-                    for (let i = 0; i < tasks.length; i++) { 
-                        if (tasks.item(i).id == chengedID) {
-                            db.transaction((tx) => {
-                                tx.executeSql('DELETE FROM task WHERE id=?', [tasks.item(i).id]);
-                                tx.executeSql('SELECT * FROM task;',[], (sqlTransaction, sqlResultSet) => {
-                                    showTakList(sqlResultSet.rows);
-                                });
-                            }); 
-                        }
-                    }
-                }
-            });
-        });
-        
-    //tx.executeSql('DROP TABLE task');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY , date, text, time, doneStatus)');
+        showTakList();
+        //tx.executeSql('DROP TABLE task');
     });
 
     //функция вывода тасков 
-    function showTakList (takListObj) {
-        let value;
-        console.log(takListObj);
-        taskList.innerHTML = '';
-        for (let i = 0; i < takListObj.length; i++) {
-            value = takListObj.item(i);
-            taskList.innerHTML += `<div class="task-block" data-id="${value.id}">
-                <div class="task-status-block">
-                    <input id="${value.id}" type="checkbox" class="task-status" ${value.doneStatus ? 'checked' : ''}>
-                </div>
-                <div class="task-text">${value.text}</div>
-                <span>Время которое необходимо затратить: ${value.time}</span>
-                <span data-id="${value.id}" class="removeTask">&times;</span>
-            </div>`;
-        }
-        console.log("showed");
+    function showTakList () {
+        db.transaction((tx) => {
+            tx.executeSql('SELECT * FROM task',[], (sqlTransaction, sqlResultSet) => {
+                if(sqlResultSet.rows.length) {
+                    let lastTask = sqlResultSet.rows[Object.keys(sqlResultSet.rows)[Object.keys(sqlResultSet.rows).length - 1]];
+                    document.getElementById("addNewTask-form").dataset.id = ++lastTask.id;
+                    let value;
+                    taskList.innerHTML = '';
+                    for (let i = 0; i < sqlResultSet.rows.length; i++) {
+                        value = sqlResultSet.rows.item(i);
+                        taskList.innerHTML += `<div class="task-block" data-id="${value.id}">
+                            <div class="task-status-block">
+                                <input id="${value.id}" type="checkbox" class="task-status" ${value.doneStatus ? 'checked' : ''}>
+                            </div>
+                            <div class="task-text">${value.text}</div>
+                            <span>Время которое необходимо затратить: ${value.time}</span>
+                            <span data-id="${value.id}" class="removeTask">&times;</span>
+                        </div>`;
+                    }
+                    let taskStatusInputs = document.querySelectorAll(".task-status");
+                    let taskRemove = document.querySelectorAll(".removeTask");
+                    taskStatusInputs.forEach((value) => {
+                        value.onchange = () => {
+                            db.transaction((tx) => {
+                                tx.executeSql('UPDATE task SET doneStatus=? WHERE id=?', [+value.checked, value.id]);
+                            }); 
+                        }
+                    });
+                    taskRemove.forEach((value) => {
+                        value.onclick = () => {         
+                            db.transaction((tx) => {
+                                tx.executeSql('DELETE FROM task WHERE id=?', [value.dataset.id]);
+                                showTakList();
+                            }); 
+                        }
+                    });
+                }
+            }); 
+        });
     }
 
     let getCarrentDate = () => {
@@ -113,11 +96,8 @@ if(window.openDatabase) {
                 tx.executeSql('INSERT INTO task (id, date, text, time, doneStatus) VALUES(?,?,?,?,?);', [addNewTaskForm.dataset.id, 
                 getCarrentDate(), document.getElementById("task-text").value, document.getElementById("task-time").value, 0]);
                 addNewTask.dataset.id = addNewTaskForm.dataset.id++;
-                
-                tx.executeSql('SELECT * FROM task;',[], (sqlTransaction, sqlResultSet) => {
-                    showTakList(sqlResultSet.rows);
-                });
-                
+
+                showTakList();
             });
         } else {
             document.getElementById("addNewTask-form").classList.toggle("none");
