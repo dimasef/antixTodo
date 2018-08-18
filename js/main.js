@@ -42,6 +42,7 @@ if(window.openDatabase) {
     //функция вывода тасков 
     function showTakList (takListObj) {
         let value;
+        taskList.innerHTML = '';
         for (let i = 0; i < takListObj.length; i++) {
             value = takListObj.item(i);
             taskList.innerHTML += `<div class="task-block" data-id="${value.id}">
@@ -91,8 +92,12 @@ if(window.openDatabase) {
             db.transaction(function(tx){
                 tx.executeSql('INSERT INTO task (id, date, text, time, doneStatus) VALUES(?,?,?,?,?);', [addNewTaskForm.dataset.id, 
                 getCarrentDate(), document.getElementById("task-text").value, document.getElementById("task-time").value, 0]);
-
                 addNewTask.dataset.id = addNewTaskForm.dataset.id++;
+                
+                tx.executeSql('SELECT * FROM task;',[], (sqlTransaction, sqlResultSet) => {
+                    showTakList(sqlResultSet.rows);
+                });
+                
             });
         } else {
             document.getElementById("addNewTask-form").classList.toggle("none");
