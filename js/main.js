@@ -11,7 +11,7 @@ if(window.openDatabase) {
     
     db.transaction((tx) => {
    
-        tx.executeSql('CREATE TABLE IF NOT EXISTS `task` (`id` INTEGER PRIMARY KEY , `date`, `text`, `time`, `doneStatus`);');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY , date, text, time, doneStatus);');
 
         tx.executeSql('SELECT * FROM task;',[], (sqlTransaction, sqlResultSet) => {
     
