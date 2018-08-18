@@ -87,9 +87,9 @@ if(window.openDatabase) {
     };
 
     addNewTask.onclick = () => {
-        if(validateNewTastk()){
+        if(validateNewTastk()) {
             let addNewTaskForm = document.getElementById("addNewTask-form");
-            db.transaction(function(tx){
+            db.transaction((tx) => {
                 tx.executeSql('INSERT INTO task (id, date, text, time, doneStatus) VALUES(?,?,?,?,?);', [addNewTaskForm.dataset.id, 
                 getCarrentDate(), document.getElementById("task-text").value, document.getElementById("task-time").value, 0]);
                 addNewTask.dataset.id = addNewTaskForm.dataset.id++;
