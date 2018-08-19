@@ -19,20 +19,25 @@ if(window.openDatabase) {
 
     let showProgressLine = (tasks) => {
         const progressBlock = document.getElementById("progressBlock");
-        let allTaskTimeToday = 0, perWidth = 0;
+        let allTaskTimeToday = 0, perWidth = 0, allWidth = 0;
         for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
-        progressBlock.innerHTML = '';
         for (let i = 0; i < tasks.length; i++) {
-            perWidth = (parseInt(tasks.item(i).time) * 100) / allTaskTimeToday;
-            progressBlock.innerHTML += (tasks.item(i).doneStatus) ? 
-            `<div class="progress-part successProgress" data-width="${perWidth}" data-taskid="${tasks.item(i).id}"></div>` : '';
+            perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
         }
-        document.querySelectorAll(".successProgress").forEach((value) => {
-            for(let i = 0; i < value.dataset.width; i++){
-                value.style.width = i+'%';
+        let progId = document.getElementById("progId");
+        let progress = setInterval(() => {
+            if (allWidth == parseInt(perWidth)) {
+                clearInterval(progress);
             }
-        });
-        //console.log(allTaskTimeToday);
+            else if (allWidth < parseInt(perWidth)) {
+                allWidth++;
+                progId.style.width = allWidth + '%';
+            }
+            else if (allWidth > perWidth) {
+                allWidth--;
+                progId.style.width = allWidth + '%';
+            }
+        }, 10);
     };
     let logTaskDoneFunc = (status, id) => {
         db.transaction((tx) => {
@@ -53,7 +58,7 @@ if(window.openDatabase) {
     db.transaction((tx) => {
         tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus);');
         tx.executeSql('CREATE TABLE IF NOT EXISTS DatesTaskDone (id INTEGER PRIMARY KEY AUTOINCREMENT, task_id, dateDone);');
-       // tx.executeSql('DROP TABLE task;');
+       //tx.executeSql('DROP TABLE DatesTaskDone;');
         showTakList();
     });
 
