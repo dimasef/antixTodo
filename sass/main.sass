@@ -1,14 +1,28 @@
 @mixin transitionProgress($time)
-  -webkit-transition: $time linear;
-  -moz-transition:    $time linear;
-  -o-transition:      $time linear;
-  transition:         $time linear;
+    -webkit-transition: $time linear;
+    -moz-transition:    $time linear;
+    -o-transition:      $time linear;
+    transition:         $time linear;
+
+@mixin animationGradient($time)
+    -webkit-animation: Gradient $time ease infinite
+    -moz-animation: Gradient $time ease infinite
+    -o-animation: Gradient $time ease infinite
+    animation: Gradient $time ease infinite
+
+@mixin mainBtnShadow($color)
+    -webkit-box-shadow: 0px 4px 14px 2px $color
+    -moz-box-shadow: 0px 4px 14px 2px $color
+    -o-box-shadow: 0px 4px 14px 2px $color
+    box-shadow: 0px 4px 14px 2px $color
 
 body   
+    font-family: 'Encode Sans Condensed', sans-serif
     background-color: #f1f1f1
 
 p 
     margin: 0px
+
 
 .application
     max-width: 1200px
@@ -44,11 +58,34 @@ p
     cursor: pointer
 
 #progressBlock
+    background: #ecebeb
+    height: 5px
     .progress-part
         display: inline-block
-        height: 3px
+        height: 5px
         background: #d6d6d6
         width: 0%
     .successProgress
         background-color: #7ee04b
         @include transitionProgress(.30s)
+        position: relative
+        top: -11px
+
+.btn-main-style 
+    border: 0px
+    font-size: 18px
+    margin-bottom: 20px
+    border-radius: 2px
+    padding: 12px 42px
+    color: white
+    background: linear-gradient(-90deg, #4a1b9e, #b523ce)
+    background-size: 200% 200%
+    cursor: pointer
+    transition: all 400ms ease-in-out
+    @include animationGradient(3s)
+    @include mainBtnShadow(#c36bd2)
+    &:focus, &:hover
+        outline: none
+        transition: all 400ms ease-in-out
+        @include mainBtnShadow(rgba(195, 107, 210, 0))
+        

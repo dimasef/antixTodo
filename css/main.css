@@ -1,4 +1,5 @@
 body {
+  font-family: 'Encode Sans Condensed', sans-serif;
   background-color: #f1f1f1;
 }
 
@@ -47,9 +48,14 @@ p {
   cursor: pointer;
 }
 
+#progressBlock {
+  background: #ecebeb;
+  height: 5px;
+}
+
 #progressBlock .progress-part {
   display: inline-block;
-  height: 3px;
+  height: 5px;
   background: #d6d6d6;
   width: 0%;
 }
@@ -60,4 +66,36 @@ p {
   -moz-transition: 0.3s linear;
   -o-transition: 0.3s linear;
   transition: 0.3s linear;
+  position: relative;
+  top: -11px;
+}
+
+.btn-main-style {
+  border: 0px;
+  font-size: 18px;
+  margin-bottom: 20px;
+  border-radius: 2px;
+  padding: 12px 42px;
+  color: white;
+  background: linear-gradient(-90deg, #4a1b9e, #b523ce);
+  background-size: 200% 200%;
+  cursor: pointer;
+  transition: all 400ms ease-in-out;
+  -webkit-animation: Gradient 3s ease infinite;
+  -moz-animation: Gradient 3s ease infinite;
+  -o-animation: Gradient 3s ease infinite;
+  animation: Gradient 3s ease infinite;
+  -webkit-box-shadow: 0px 4px 14px 2px #c36bd2;
+  -moz-box-shadow: 0px 4px 14px 2px #c36bd2;
+  -o-box-shadow: 0px 4px 14px 2px #c36bd2;
+  box-shadow: 0px 4px 14px 2px #c36bd2;
+}
+
+.btn-main-style:focus, .btn-main-style:hover {
+  outline: none;
+  transition: all 400ms ease-in-out;
+  -webkit-box-shadow: 0px 4px 14px 2px rgba(195, 107, 210, 0);
+  -moz-box-shadow: 0px 4px 14px 2px rgba(195, 107, 210, 0);
+  -o-box-shadow: 0px 4px 14px 2px rgba(195, 107, 210, 0);
+  box-shadow: 0px 4px 14px 2px rgba(195, 107, 210, 0);
 }
