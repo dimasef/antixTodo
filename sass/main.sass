@@ -1,8 +1,15 @@
+@mixin transitionProgress($time)
+  -webkit-transition: $time linear;
+  -moz-transition:    $time linear;
+  -o-transition:      $time linear;
+  transition:         $time linear;
+
 body   
     background-color: #f1f1f1
 
 p 
     margin: 0px
+
 .application
     max-width: 1200px
     margin: 0 auto
@@ -35,3 +42,13 @@ p
     color: red
     font-family: sans-serif
     cursor: pointer
+
+#progressBlock
+    .progress-part
+        display: inline-block
+        height: 3px
+        background: #d6d6d6
+        width: 0%
+    .successProgress
+        background-color: #7ee04b
+        @include transitionProgress(.30s)

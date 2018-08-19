@@ -1,26 +1,69 @@
 "use strict";
-
-const btnNewTask = document.getElementById("show-addNewTask-form");
-const addNewTask = document.getElementById("add-new-task");
-const taskList = document.getElementById("task-list");
-
-let tasks = {};
-
 if(window.openDatabase) {
-    const db = openDatabase("antiXToDodb","","db", 2097152);
-    
+    const db = openDatabase("antiXToDodb","1.0","db", 2097152);
+
+    const btnNewTask = document.getElementById("show-addNewTask-form");
+    const addNewTask = document.getElementById("add-new-task");
+    const taskList = document.getElementById("task-list");
+
+    let getCarrentDate = () => {
+        let today = new Date();
+        let dd = today.getDate();
+        let mm = today.getMonth() + 1;
+        let yyyy = today.getFullYear();
+        if(dd < 10) dd = '0' + dd;
+        if(mm < 10) mm = '0' + mm;
+        today = dd + '.' + mm + '.' + yyyy;
+        return today;
+    }; 
+
+    let showProgressLine = (tasks) => {
+        const progressBlock = document.getElementById("progressBlock");
+        let allTaskTimeToday = 0, perWidth = 0;
+        for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
+        progressBlock.innerHTML = '';
+        for (let i = 0; i < tasks.length; i++) {
+            perWidth = (parseInt(tasks.item(i).time) * 100) / allTaskTimeToday;
+            progressBlock.innerHTML += (tasks.item(i).doneStatus) ? 
+            `<div class="progress-part successProgress" data-width="${perWidth}" data-taskid="${tasks.item(i).id}"></div>` : '';
+        }
+        document.querySelectorAll(".successProgress").forEach((value) => {
+            for(let i = 0; i < value.dataset.width; i++){
+                value.style.width = i+'%';
+            }
+        });
+        //console.log(allTaskTimeToday);
+    };
+    let logTaskDoneFunc = (status, id) => {
+        db.transaction((tx) => {
+            tx.executeSql('SELECT * FROM DatesTaskDone WHERE dateDone=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
+                if(status) {
+                    db.transaction((tx) => {
+                        tx.executeSql('INSERT INTO DatesTaskDone (task_id, dateDone) VALUES(?,?);', [id, getCarrentDate()]);
+                    });
+                } else if(!status) {
+                    db.transaction((tx) => {
+                        tx.executeSql('DELETE FROM DatesTaskDone WHERE dateDone = ? AND task_id = ?;', [getCarrentDate(), id]);
+                    });
+                }
+            });
+        });
+    };
+  
     db.transaction((tx) => {
-   
-        tx.executeSql('CREATE TABLE IF NOT EXISTS task (id INTEGER PRIMARY KEY , date, text, time, doneStatus)');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus);');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS DatesTaskDone (id INTEGER PRIMARY KEY AUTOINCREMENT, task_id, dateDone);');
+       // tx.executeSql('DROP TABLE task;');
         showTakList();
-        //tx.executeSql('DROP TABLE task');
     });
+
 
     //функция вывода тасков 
     function showTakList () {
         db.transaction((tx) => {
-            tx.executeSql('SELECT * FROM task',[], (sqlTransaction, sqlResultSet) => {
+            tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
                 if(sqlResultSet.rows.length) {
+                    showProgressLine(sqlResultSet.rows);
                     let lastTask = sqlResultSet.rows[Object.keys(sqlResultSet.rows)[Object.keys(sqlResultSet.rows).length - 1]];
                     document.getElementById("addNewTask-form").dataset.id = ++lastTask.id;
                     let value;
@@ -41,39 +84,25 @@ if(window.openDatabase) {
                     taskStatusInputs.forEach((value) => {
                         value.onchange = () => {
                             db.transaction((tx) => {
-                                tx.executeSql('UPDATE task SET doneStatus=? WHERE id=?', [+value.checked, value.id]);
+                                tx.executeSql('UPDATE Task SET doneStatus=? WHERE id=?', [+value.checked, value.id]);
+                                logTaskDoneFunc(value.checked, value.id);
+                                showTakList();
                             }); 
                         }
                     });
                     taskRemove.forEach((value) => {
                         value.onclick = () => {         
                             db.transaction((tx) => {
-                                tx.executeSql('DELETE FROM task WHERE id=?', [value.dataset.id]);
+                                tx.executeSql('DELETE FROM Task WHERE id=?', [value.dataset.id]);
                                 showTakList();
                             }); 
                         }
                     });
                 }
+                else taskList.innerHTML = '';
             }); 
         });
     }
-
-    let getCarrentDate = () => {
-
-        let today = new Date();
-        let dd = today.getDate();
-        let mm = today.getMonth() + 1;
-        let yyyy = today.getFullYear();
-
-        if(dd < 10) dd = '0' + dd;
-
-        if(mm < 10) mm = '0' + mm;
-
-        today = dd + '.' + mm + '.' + yyyy;
-
-        return today;
-
-    }; 
 
     let validateNewTastk = () => {
         const newTaskTest = document.getElementById("task-text").value,
@@ -97,8 +126,8 @@ if(window.openDatabase) {
 
             taskTime = (btnT.options[btnT.selectedIndex].value === '1') ? taskTime : taskTime * 60;
             db.transaction((tx) => {
-                tx.executeSql('INSERT INTO task (id, date, text, time, doneStatus) VALUES(?,?,?,?,?);', [addNewTaskForm.dataset.id, 
-                getCarrentDate(), document.getElementById("task-text").value, taskTime, 0]);
+                tx.executeSql('INSERT INTO Task (date, text, time, doneStatus) VALUES(?,?,?,?);', [getCarrentDate(), 
+                    document.getElementById("task-text").value, taskTime, 0]);
                 addNewTask.dataset.id = addNewTaskForm.dataset.id++;
                 showTakList();
             });

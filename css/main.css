@@ -46,3 +46,18 @@ p {
   font-family: sans-serif;
   cursor: pointer;
 }
+
+#progressBlock .progress-part {
+  display: inline-block;
+  height: 3px;
+  background: #d6d6d6;
+  width: 0%;
+}
+
+#progressBlock .successProgress {
+  background-color: #7ee04b;
+  -webkit-transition: 0.3s linear;
+  -moz-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
+}
