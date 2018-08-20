@@ -18,7 +18,6 @@ if(window.openDatabase) {
     }; 
 
     let showProgressLine = (tasks) => {
-        const progressBlock = document.getElementById("progressBlock");
         let allTaskTimeToday = 0, perWidth = 0, allWidth = 0;
         for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
         for (let i = 0; i < tasks.length; i++) {
@@ -56,25 +55,34 @@ if(window.openDatabase) {
     };
   
     db.transaction((tx) => {
-        tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus);');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
         tx.executeSql('CREATE TABLE IF NOT EXISTS DatesTaskDone (id INTEGER PRIMARY KEY AUTOINCREMENT, task_id, dateDone);');
-       //tx.executeSql('DROP TABLE DatesTaskDone;');
+        //tx.executeSql('DROP TABLE DatesTaskDone;');
         showTakList();
     });
 
-
+    let taskReset = (id, eternityStatus) => {
+        db.transaction((tx) => {
+            if(value.eternity)
+                tx.executeSql('UPDATE Task SET doneStatus=? WHERE id=?', [0, id]);
+            else 
+                tx.executeSql('DELETE FROM Task WHERE id=?', [id]);
+        });
+    };
     //функция вывода тасков 
     function showTakList () {
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
                 if(sqlResultSet.rows.length) {
-                    showProgressLine(sqlResultSet.rows);
                     let lastTask = sqlResultSet.rows[Object.keys(sqlResultSet.rows)[Object.keys(sqlResultSet.rows).length - 1]];
                     document.getElementById("addNewTask-form").dataset.id = ++lastTask.id;
                     let value;
                     taskList.innerHTML = '';
                     for (let i = 0; i < sqlResultSet.rows.length; i++) {
                         value = sqlResultSet.rows.item(i);
+                        if(value.date != getCarrentDate()) {
+                            taskReset(value.id, value.eternity);
+                        }
                         taskList.innerHTML += `<div class="task-block" data-id="${value.id}">
                             <div class="task-status-block">
                                 <input id="${value.id}" type="checkbox" class="task-status" ${value.doneStatus ? 'checked' : ''}>
@@ -82,6 +90,7 @@ if(window.openDatabase) {
                             <div class="task-text">${value.text}</div>
                             <span>Время которое необходимо затратить: ${value.time}</span>
                             <span data-id="${value.id}" class="removeTask">&times;</span>
+                            ${value.eternity ? '<span class="infin">&infin;</span>' : ''}
                         </div>`;
                     }
                     let taskStatusInputs = document.querySelectorAll(".task-status");
@@ -89,7 +98,7 @@ if(window.openDatabase) {
                     taskStatusInputs.forEach((value) => {
                         value.onchange = () => {
                             db.transaction((tx) => {
-                                tx.executeSql('UPDATE Task SET doneStatus=? WHERE id=?', [+value.checked, value.id]);
+                                tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [+value.checked, getCarrentDate(), value.id]);
                                 logTaskDoneFunc(value.checked, value.id);
                                 showTakList();
                             }); 
@@ -105,6 +114,7 @@ if(window.openDatabase) {
                     });
                 }
                 else taskList.innerHTML = '';
+                showProgressLine(sqlResultSet.rows);
             }); 
         });
     }
@@ -127,12 +137,13 @@ if(window.openDatabase) {
         if(validateNewTastk()) {
             let taskTime = document.getElementById("task-time").value;
             const btnT = document.getElementById("task-time-unit"),
+                  eternity = document.getElementById("eternity").checked,
                   addNewTaskForm = document.getElementById("addNewTask-form");
 
             taskTime = (btnT.options[btnT.selectedIndex].value === '1') ? taskTime : taskTime * 60;
             db.transaction((tx) => {
-                tx.executeSql('INSERT INTO Task (date, text, time, doneStatus) VALUES(?,?,?,?);', [getCarrentDate(), 
-                    document.getElementById("task-text").value, taskTime, 0]);
+                tx.executeSql('INSERT INTO Task (date, text, time, doneStatus, eternity) VALUES(?,?,?,?,?);', [getCarrentDate(), 
+                    document.getElementById("task-text").value, taskTime, 0, +eternity]);
                 addNewTask.dataset.id = addNewTaskForm.dataset.id++;
                 showTakList();
             });

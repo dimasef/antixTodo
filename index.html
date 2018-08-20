@@ -22,13 +22,17 @@
                 <button id="show-addNewTask-form" class="btn-main-style">Добавить новую</button>
             </div>
             <div class="addNewTask-form none" id="addNewTask-form" data-id="1">
-                    <h3>Новая ежедневная задача</h3>
+                    <h3>Новая задача</h3>
                     <textarea id="task-text" placeholder="Описание задачи"></textarea>
                     <input id="task-time" type="text" placeholder="Время выполнения">
                     <select id="task-time-unit">
                         <option value="1">мин</option>
                         <option value="2">часы</option>
                     </select>
+                    <div>
+                        <label for="eternity">Ежедневная задача</label>
+                        <input id="eternity" type="checkbox">
+                    </div>
                     <div>
                         <button id="add-new-task" class="btn-main-style">Добавить</button>
                     </div>

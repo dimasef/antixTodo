@@ -4,17 +4,17 @@
     -o-transition:      $time linear;
     transition:         $time linear;
 
-@mixin animationGradient($time)
-    -webkit-animation: Gradient $time ease infinite
-    -moz-animation: Gradient $time ease infinite
-    -o-animation: Gradient $time ease infinite
-    animation: Gradient $time ease infinite
-
 @mixin mainBtnShadow($color)
     -webkit-box-shadow: 0px 4px 14px 2px $color
     -moz-box-shadow: 0px 4px 14px 2px $color
     -o-box-shadow: 0px 4px 14px 2px $color
     box-shadow: 0px 4px 14px 2px $color
+
+@mixin animationGradient($time)
+    -webkit-animation: Gradient $time ease infinite
+    -moz-animation: Gradient $time ease infinite
+    -o-animation: Gradient $time ease infinite
+    animation: Gradient $time ease infinite
 
 =keyframes($name)
   @-webkit-keyframes #{$name}
@@ -34,12 +34,11 @@
     100% 
         background-position: 0% 50%
 
-
 body   
     font-family: 'Encode Sans Condensed', sans-serif
     background-color: #f1f1f1
 
-p 
+p, h3
     margin: 0px
 
 
@@ -48,11 +47,18 @@ p
     margin: 0 auto
 
 .addNewTask-form 
-    width: 400px
+    width: 700px
     display: inline-block
     textarea
-        width: 320px
+        width: 636px
+        font-size: 16px
+        border-radius: 2px
         height: 80px
+        border: 1px solid #b387ff
+        padding: 7px
+        resize: none;
+        &:focus
+            outline: none
 
 .none
     display: none
@@ -107,4 +113,14 @@ p
         outline: none
         transition: all 400ms ease-in-out
         @include mainBtnShadow(rgba(195, 107, 210, 0))
+    
+.infin 
+    font-size: 35px
+    font-weight: 300
+    line-height: 0px
+    color: #902ec5
+    float: right
+    position: relative
+    top: -16px
+    left: -24px
         
