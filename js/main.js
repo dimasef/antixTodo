@@ -9,8 +9,6 @@ if(window.openDatabase) {
     (function(){
         db.transaction((tx) => {
             tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
-            tx.executeSql('CREATE TABLE IF NOT EXISTS DatesTaskDone (id INTEGER PRIMARY KEY AUTOINCREMENT, task_id, dateDone);');
-            //tx.executeSql('DROP TABLE TaskHistory;');
             tx.executeSql('CREATE TABLE IF NOT EXISTS TaskHistory (date STRING PRIMARY KEY, id_arr_done STRING, id_arr_fail STRING, progress STRING);');
             //tx.executeSql('DROP TABLE DatesTaskDone;');
             showTakList();
@@ -74,22 +72,6 @@ if(window.openDatabase) {
         }, 5);
     };
 
-    let logTaskDoneFunc = (status, id) => {
-        db.transaction((tx) => {
-            tx.executeSql('SELECT * FROM DatesTaskDone WHERE dateDone=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
-                if(status) {
-                    db.transaction((tx) => {
-                        tx.executeSql('INSERT INTO DatesTaskDone (task_id, dateDone) VALUES(?,?);', [id, getCarrentDate()]);
-                    });
-                } else if(!status) {
-                    db.transaction((tx) => {
-                        tx.executeSql('DELETE FROM DatesTaskDone WHERE dateDone = ? AND task_id = ?;', [getCarrentDate(), id]);
-                    });
-                }
-            });
-        });
-    };
-
     let taskReset = (id, eternityStatus) => {
         db.transaction((tx) => {
             if(eternityStatus)
@@ -109,6 +91,18 @@ if(window.openDatabase) {
                         getDoneOrFailtTasks(tasks), getDoneOrFailtTasks(tasks, 'fail'), getProgress(tasks)]);
                     });
                 }
+            });
+        });
+    };
+
+    let updateHistotyTasks = () => {
+        db.transaction((tx) => {
+            tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
+                let tasks = sqlResultSet.rows;
+                db.transaction((tx) => {
+                    tx.executeSql('UPDATE TaskHistory SET id_arr_done=?, id_arr_fail=?, progress=?  WHERE date=?', [
+                        getDoneOrFailtTasks(tasks), getDoneOrFailtTasks(tasks, 'fail'), getProgress(tasks), getCarrentDate()]);
+                });
             });
         });
     };
@@ -147,7 +141,6 @@ if(window.openDatabase) {
                         value.onchange = () => {
                             db.transaction((tx) => {
                                 tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [+value.checked, getCarrentDate(), value.id]);
-                                logTaskDoneFunc(value.checked, value.id);
                                 showProgressLine(null, true);
                             }); 
                         }
@@ -161,6 +154,7 @@ if(window.openDatabase) {
                         }
                     });
                     addHistotyTasks(sqlResultSet.rows);
+                    updateHistotyTasks();
                 }
                 else taskList.innerHTML = '';
                 showProgressLine(sqlResultSet.rows);
