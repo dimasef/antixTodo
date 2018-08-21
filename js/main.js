@@ -17,27 +17,44 @@ if(window.openDatabase) {
         return today;
     }; 
 
-    let showProgressLine = (tasks) => {
-        let allTaskTimeToday = 0, perWidth = 0, allWidth = 0;
+    let getProgress = (tasks) => {
+        let allTaskTimeToday = 0, perWidth = 0;
         for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
         for (let i = 0; i < tasks.length; i++) {
             perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
         }
+        return parseInt(perWidth);
+    };
+
+    let getDoneOrFailtTasks = (tasks, status) => {
+        let arrDoneString = '', arrFailString = '', result;
+        for (let i = 0; i < tasks.length; i++) {
+            if(tasks.item(i).doneStatus) {
+                arrDoneString += (arrDoneString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+            } else arrFailString += (arrFailString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+        }
+        return result = (status === 'fail') ? arrFailString : arrDoneString;
+    };
+
+    let showProgressLine = (tasks) => {
+        let allWidth = 0;
+        let perWidthResult = getProgress(tasks);
         let progId = document.getElementById("progId");
         let progress = setInterval(() => {
-            if (allWidth == parseInt(perWidth)) {
+            if (allWidth == perWidthResult) {
                 clearInterval(progress);
             }
-            else if (allWidth < parseInt(perWidth)) {
+            else if (allWidth < perWidthResult) {
                 allWidth++;
                 progId.style.width = allWidth + '%';
             }
-            else if (allWidth > perWidth) {
+            else if (allWidth > perWidthResult) {
                 allWidth--;
                 progId.style.width = allWidth + '%';
             }
         }, 10);
     };
+
     let logTaskDoneFunc = (status, id) => {
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM DatesTaskDone WHERE dateDone=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
@@ -57,6 +74,8 @@ if(window.openDatabase) {
     db.transaction((tx) => {
         tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
         tx.executeSql('CREATE TABLE IF NOT EXISTS DatesTaskDone (id INTEGER PRIMARY KEY AUTOINCREMENT, task_id, dateDone);');
+        //tx.executeSql('DROP TABLE TaskHistory;');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS TaskHistory (date STRING PRIMARY KEY, id_arr_done STRING, id_arr_fail STRING, progress STRING);');
         //tx.executeSql('DROP TABLE DatesTaskDone;');
         showTakList();
     });
@@ -69,6 +88,21 @@ if(window.openDatabase) {
                 tx.executeSql('DELETE FROM Task WHERE id=?', [id]);
         });
     };
+
+    let addHistotyTasks = (tasks) => {
+        db.transaction((tx) => {
+            tx.executeSql('SELECT date FROM TaskHistory', [], (sqlTransaction, sqlResultSet) => {
+                let lastDate = sqlResultSet.rows[Object.keys(sqlResultSet.rows)[Object.keys(sqlResultSet.rows).length - 1]];
+                if(sqlResultSet.rows.length < 1 || lastDate != getCarrentDate()) {
+                    db.transaction((tx) => {
+                        tx.executeSql('INSERT INTO TaskHistory (date, id_arr_done, id_arr_fail, progress) VALUES(?,?,?,?);', [getCarrentDate(),
+                        getDoneOrFailtTasks(tasks), getDoneOrFailtTasks(tasks, 'fail'), getProgress(tasks)]);
+                    });
+                }
+            });
+        });
+    };
+
     //функция вывода тасков 
     function showTakList () {
         db.transaction((tx) => {
@@ -112,6 +146,7 @@ if(window.openDatabase) {
                             }); 
                         }
                     });
+                    addHistotyTasks(sqlResultSet.rows);
                 }
                 else taskList.innerHTML = '';
                 showProgressLine(sqlResultSet.rows);
