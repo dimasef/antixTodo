@@ -6,7 +6,6 @@ if(window.openDatabase) {
     const addNewTask = document.getElementById("add-new-task");
     const taskList = document.getElementById("task-list");
 
-    //ф-ция для создания таблиц
     (function(){
         db.transaction((tx) => {
             tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
@@ -18,7 +17,6 @@ if(window.openDatabase) {
         });
     })();
 
-    //ф-ция для получения текущай дати
     let getCarrentDate = () => {
         let today = new Date();
         let dd = today.getDate();
@@ -30,7 +28,6 @@ if(window.openDatabase) {
         return today;
     }; 
 
-    //ф-ция для получения прогреса по задачам в %
     let getProgress = (tasks) => {
         let allTaskTimeToday = 0, perWidth = 0;
         for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
@@ -40,7 +37,6 @@ if(window.openDatabase) {
         return parseInt(perWidth);
     };
 
-    //ф-ция для получения всех текущих выполненых и невыполненых тасков
     let getDoneOrFailtTasks = (tasks, status) => {
         let arrDoneString = '', arrFailString = '', result;
         for (let i = 0; i < tasks.length; i++) {
@@ -51,7 +47,6 @@ if(window.openDatabase) {
         return result = (status === 'fail') ? arrFailString : arrDoneString;
     };
 
-    //ф-ция для отрисовки прогресса
     let showProgressLine = (tasks, reload) => {
         let perWidthResult = {};
         if(reload) {
@@ -61,7 +56,7 @@ if(window.openDatabase) {
                 });
             });
         }
-        else perWidthResult = getProgress(tasks)
+        else perWidthResult = getProgress(tasks);
         let progId = document.getElementById("progId");
         let allWidth = parseInt(progId.style.width);
         let progress = setInterval(() => {
@@ -79,7 +74,6 @@ if(window.openDatabase) {
         }, 5);
     };
 
-    //ф-ция логирования тасков
     let logTaskDoneFunc = (status, id) => {
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM DatesTaskDone WHERE dateDone=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
@@ -96,7 +90,6 @@ if(window.openDatabase) {
         });
     };
 
-    //ф-ция для сброса вечных тасков и удаления временных 
     let taskReset = (id, eternityStatus) => {
         db.transaction((tx) => {
             if(eternityStatus)
@@ -106,7 +99,6 @@ if(window.openDatabase) {
         });
     };
 
-    //ф-ция добавления в историю дней с информацией про таски 
     let addHistotyTasks = (tasks) => {
         db.transaction((tx) => {
             tx.executeSql('SELECT date FROM TaskHistory', [], (sqlTransaction, sqlResultSet) => {
@@ -121,7 +113,6 @@ if(window.openDatabase) {
         });
     };
 
-    //функция вывода тасков 
     function showTakList () {
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
@@ -177,7 +168,6 @@ if(window.openDatabase) {
         });
     }
 
-    //функция для валидации создаваемых тасков
     let validateNewTastk = () => {
         const newTaskTest = document.getElementById("task-text").value,
             newTaskTime = document.getElementById("task-time").value,
