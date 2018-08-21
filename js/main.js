@@ -52,10 +52,18 @@ if(window.openDatabase) {
     };
 
     //ф-ция для отрисовки прогресса
-    let showProgressLine = (tasks) => {
-        let allWidth = 0;
-        let perWidthResult = getProgress(tasks);
+    let showProgressLine = (tasks, reload) => {
+        let perWidthResult = {};
+        if(reload) {
+            db.transaction((tx) => {
+                tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
+                    perWidthResult = getProgress(sqlResultSet.rows);
+                });
+            });
+        }
+        else perWidthResult = getProgress(tasks)
         let progId = document.getElementById("progId");
+        let allWidth = parseInt(progId.style.width);
         let progress = setInterval(() => {
             if (allWidth == perWidthResult) {
                 clearInterval(progress);
@@ -68,7 +76,7 @@ if(window.openDatabase) {
                 allWidth--;
                 progId.style.width = allWidth + '%';
             }
-        }, 10);
+        }, 5);
     };
 
     //ф-ция логирования тасков
@@ -91,7 +99,7 @@ if(window.openDatabase) {
     //ф-ция для сброса вечных тасков и удаления временных 
     let taskReset = (id, eternityStatus) => {
         db.transaction((tx) => {
-            if(value.eternity)
+            if(eternityStatus)
                 tx.executeSql('UPDATE Task SET doneStatus=? WHERE id=?', [0, id]);
             else 
                 tx.executeSql('DELETE FROM Task WHERE id=?', [id]);
@@ -129,7 +137,12 @@ if(window.openDatabase) {
                         }
                         taskList.innerHTML += `<div class="task-block" data-id="${value.id}">
                             <div class="task-status-block">
-                                <input id="${value.id}" type="checkbox" class="task-status" ${value.doneStatus ? 'checked' : ''}>
+                                <div class="switch">
+                                    <label>
+                                        <input id="${value.id}" type="checkbox" class="task-status" ${value.doneStatus ? 'checked' : ''}>
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="task-text">${value.text}</div>
                             <span>Время которое необходимо затратить: ${value.time}</span>
@@ -144,7 +157,7 @@ if(window.openDatabase) {
                             db.transaction((tx) => {
                                 tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [+value.checked, getCarrentDate(), value.id]);
                                 logTaskDoneFunc(value.checked, value.id);
-                                showTakList();
+                                showProgressLine(null, true);
                             }); 
                         }
                     });

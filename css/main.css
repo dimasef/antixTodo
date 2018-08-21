@@ -55,9 +55,38 @@ p, h3 {
   margin: 0px;
 }
 
+select {
+  -webkit-appearance: none;
+  -webkit-border-radius: 2px;
+}
+
 .application {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.dark-color {
+  color: #000000;
+}
+
+select.choose-time-select {
+  display: inline-block;
+  width: 39.5%;
+  border-color: white;
+  position: relative;
+  top: -1px;
+  padding-left: 10px;
+}
+
+#task-time {
+  display: inline-block;
+  width: 57%;
+  margin-right: 8px;
+  background: white;
+  border-radius: 2px;
+  padding-left: 10px;
+  height: 43px;
+  border: 1px solid #ffffff;
 }
 
 .addNewTask-form {
@@ -66,13 +95,16 @@ p, h3 {
 }
 
 .addNewTask-form textarea {
-  width: 636px;
+  width: 100%;
   font-size: 16px;
   border-radius: 2px;
   height: 80px;
-  border: 1px solid #b387ff;
-  padding: 7px;
+  border: 1px solid #ffffff;
+  padding-left: 10px;
   resize: none;
+  background: #ffffff;
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
 
 .addNewTask-form textarea:focus {
@@ -90,6 +122,8 @@ p, h3 {
   display: inline-block;
   padding: 12px 22px;
   overflow: hidden;
+  display: block;
+  margin-bottom: 12px;
 }
 
 .task-status-block {
@@ -166,4 +200,8 @@ p, h3 {
   position: relative;
   top: -16px;
   left: -24px;
+}
+
+.eternity-block {
+  margin-bottom: 10px;
 }

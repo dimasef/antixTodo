@@ -6,11 +6,14 @@
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:300,400" rel="stylesheet">
+    <link rel="stylesheet" href="css/materialize.css">
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+
 </head>
 <body>
     <div class="application">
         <div class="main">
+            
             <div class="progressLineToday">
                 <h3>Задачь выполнено на сегодня</h3>
                 <div id="progressBlock">
@@ -24,14 +27,18 @@
             <div class="addNewTask-form none" id="addNewTask-form" data-id="1">
                     <h3>Новая задача</h3>
                     <textarea id="task-text" placeholder="Описание задачи"></textarea>
-                    <input id="task-time" type="text" placeholder="Время выполнения">
-                    <select id="task-time-unit">
+                    <input id="task-time" type="number" placeholder="Время выполнения">
+                    <select id="task-time-unit" class="browser-default choose-time-select">
                         <option value="1">мин</option>
                         <option value="2">часы</option>
                     </select>
                     <div>
-                        <label for="eternity">Ежедневная задача</label>
-                        <input id="eternity" type="checkbox">
+                        <p class="eternity-block">
+                            <label>
+                                <input id="eternity" type="checkbox" />
+                                <span class="dark-color">Ежедневная задача</span>
+                            </label>
+                        <p>
                     </div>
                     <div>
                         <button id="add-new-task" class="btn-main-style">Добавить</button>
