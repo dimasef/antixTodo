@@ -142,6 +142,7 @@ if(window.openDatabase) {
                             db.transaction((tx) => {
                                 tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [+value.checked, getCarrentDate(), value.id]);
                                 showProgressLine(null, true);
+                                updateHistotyTasks();
                             }); 
                         }
                     });
@@ -175,8 +176,8 @@ if(window.openDatabase) {
                                 (pastTasks.item(i).progress > 0 && pastTasks.item(i).progress <= 30) ? 'low' : 
                                 (pastTasks.item(i).progress > 30 && pastTasks.item(i).progress <= 65) ? 'middle':
                                 (pastTasks.item(i).progress > 65 && pastTasks.item(i).progress <= 99) ? 'good' : 'full'}">
+                                <span>${pastTasks.item(i).date}</span>
                             </div>
-                            <span>${pastTasks.item(i).date}</span>
                         </div>`;
                     }
                 }

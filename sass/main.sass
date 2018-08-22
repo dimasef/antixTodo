@@ -104,7 +104,7 @@ select.choose-time-select
 
 .removeTask
     float: right
-    margin-top: -25px
+    margin-top: -31px
     font-size: 20px
     color: red
     font-family: sans-serif
@@ -119,7 +119,7 @@ select.choose-time-select
         background: #d6d6d6
         width: 0%
     .successProgress
-        background-color: #7ee04b
+        background-color: #25a59a
         @include transitionProgress(.30s)
         position: relative
         top: -11px
@@ -154,3 +154,38 @@ select.choose-time-select
 
 .eternity-block 
     margin-bottom: 10px
+
+.task-history-block 
+    overflow: hidden
+    margin-top: 10px
+    margin-bottom: 10px
+    .history-day-block
+        float: left
+        border: 2px solid #008e82
+        border-radius: 2px
+
+.progress-full
+    width: 100%
+    background-color: #25a59a
+    color: white
+
+.progress-good
+    width: 80%
+    background-color: #25a59a
+
+.progress-middle
+    width: 50%
+    background-color: #ffde3c
+
+.progress-low
+    width: 25%
+    background-color: #ff4e16
+
+.progress-empty
+    width: 3%
+    background-color: #ff1717
+
+.history-progress
+    span
+        margin-left: 10px
+        margin-right: 10px
