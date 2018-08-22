@@ -162,6 +162,28 @@ if(window.openDatabase) {
         });
     }
 
+    (function showHistoryTask () {
+        db.transaction((tx) => {
+            tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
+                if(sqlResultSet.rows.length) {
+                    let pastTasks = sqlResultSet.rows;
+                    const historyBlock = document.getElementById("history");
+                    historyBlock.innerHTML = '';
+                    for (let i = 0; i < pastTasks.length; i++) {
+                        historyBlock.innerHTML += `<div class="history-day-block">
+                            <div class="history-progress progress-${(pastTasks.item(i).progress == 0) ? 'empty' : 
+                                (pastTasks.item(i).progress > 0 && pastTasks.item(i).progress <= 30) ? 'low' : 
+                                (pastTasks.item(i).progress > 30 && pastTasks.item(i).progress <= 65) ? 'middle':
+                                (pastTasks.item(i).progress > 65 && pastTasks.item(i).progress <= 99) ? 'good' : 'full'}">
+                            </div>
+                            <span>${pastTasks.item(i).date}</span>
+                        </div>`;
+                    }
+                }
+            });
+        });
+    })();
+
     let validateNewTastk = () => {
         const newTaskTest = document.getElementById("task-text").value,
             newTaskTime = document.getElementById("task-time").value,
