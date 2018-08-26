@@ -1,5 +1,6 @@
 "use strict";
 if(window.openDatabase) {
+
     const db = openDatabase("antiXToDodb","1.0","db", 2097152);
 
     const btnNewTask = document.getElementById("show-addNewTask-form");
@@ -42,13 +43,13 @@ if(window.openDatabase) {
     };
 
     let getDoneOrFailtTasks = (tasks, status) => {
-        let arrDoneString = '', arrFailString = '', result;
+        let arrDoneString = '', arrFailString = '', result = '';
         for (let i = 0; i < tasks.length; i++) {
             if(tasks.item(i).doneStatus) {
                 arrDoneString += (arrDoneString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
             } else arrFailString += (arrFailString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
         }
-        return result = (status === 'fail') ? arrFailString : arrDoneString;
+        return result = (status === 'fail') ? arrFailString.toString() : arrDoneString.toString();
     };
 
     let showProgressLine = (tasks, reload) => {
@@ -179,19 +180,31 @@ if(window.openDatabase) {
         db.transaction((tx) => {
             tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
                 if(sqlResultSet.rows.length) {
-                    let pastTasks = sqlResultSet.rows;
+                    
+                    let pastTasks = (Object.values(sqlResultSet.rows));
                     const historyBlock = document.getElementById("history");
                     historyBlock.innerHTML = '';
-                    for (let i = 0; i < pastTasks.length; i++) {
+                    let progress = '', let = '', fail = '', successOrFailString = '';
+                    pastTasks.forEach(item => {
+                        success = item.id_arr_done.toString().split(',');
+                        fail = item.id_arr_fail.toString().split(',');
+                        success = (success.length > 1) ? success.length : (success[0] == '') ? 0 : 1; 
+                        fail = (fail.length > 1) ? fail.length : (fail[0] == '') ? 0 : 1; 
+                        successOrFailString = "Выполнено " + success + " задач, невыполено " + fail + " задач.";
+                        progress = (item.progress == 0) ? 'empty' : 
+                            (item.progress > 0 && item.progress <= 30) ? 'low' : 
+                            (item.progress > 30 && item.progress <= 65) ? 'middle':
+                            (item.progress > 65 && item.progress <= 99) ? 'good' : 'full';
+                        
                         historyBlock.innerHTML += `<div class="history-day-block">
-                            <div class="history-progress progress-${(pastTasks.item(i).progress == 0) ? 'empty' : 
-                                (pastTasks.item(i).progress > 0 && pastTasks.item(i).progress <= 30) ? 'low' : 
-                                (pastTasks.item(i).progress > 30 && pastTasks.item(i).progress <= 65) ? 'middle':
-                                (pastTasks.item(i).progress > 65 && pastTasks.item(i).progress <= 99) ? 'good' : 'full'}">
-                                <span>${pastTasks.item(i).date}</span>
+                            <div class="tooltipped history-progress progress-${progress}" data-position="bottom" 
+                            data-tooltip="${successOrFailString}">
+                                <span>${item.date}</span>
                             </div>
                         </div>`;
-                    }
+                        
+                    });
+                    let instances = M.Tooltip.init(document.querySelectorAll('.tooltipped'));
                 }
             });
         });
