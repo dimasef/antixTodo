@@ -184,7 +184,7 @@ if(window.openDatabase) {
                     let pastTasks = (Object.values(sqlResultSet.rows));
                     const historyBlock = document.getElementById("history");
                     historyBlock.innerHTML = '';
-                    let progress = '', let = '', fail = '', successOrFailString = '';
+                    let progress = '', success = '', fail = '', successOrFailString = '';
                     pastTasks.forEach(item => {
                         success = item.id_arr_done.toString().split(',');
                         fail = item.id_arr_fail.toString().split(',');
