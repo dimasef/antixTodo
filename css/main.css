@@ -118,25 +118,50 @@ select.choose-time-select {
 .task-block {
   background: white;
   border-radius: 2px;
-  width: 600px;
-  display: inline-block;
-  padding: 12px 22px;
+  width: 698px;
+  padding: 12px 10px;
   overflow: hidden;
   display: block;
   margin-bottom: 12px;
+  padding-left: 5px;
 }
 
-.task-status-block {
+.task-block .rigth-task-info {
   float: left;
+  width: 87%;
+  overflow: hidden;
+}
+
+.task-block .rigth-task-info-body {
+  float: left;
+  width: 90%;
+}
+
+.task-block .rigth-task-info-body .tasl-time {
+  color: #afafaf;
+  font-weight: 300;
+}
+
+.task-block .rigth-task-info-tail {
+  padding-left: 10px;
+  float: left;
+  width: 10%;
+}
+
+.task-block .task-status-block {
+  float: left;
+  width: 12%;
+  padding-top: 9px;
 }
 
 .removeTask {
-  float: right;
-  margin-top: -31px;
   font-size: 20px;
   color: red;
   font-family: sans-serif;
   cursor: pointer;
+  position: relative;
+  top: -5px;
+  left: 5px;
 }
 
 #progressBlock {
@@ -196,10 +221,7 @@ select.choose-time-select {
   font-weight: 300;
   line-height: 0px;
   color: #902ec5;
-  float: right;
   position: relative;
-  top: -16px;
-  left: -24px;
 }
 
 .eternity-block {
@@ -216,6 +238,7 @@ select.choose-time-select {
   float: left;
   border: 2px solid #008e82;
   border-radius: 2px;
+  margin-right: 5px;
 }
 
 .progress-full {
@@ -239,7 +262,7 @@ select.choose-time-select {
   background-color: #ff4e16;
 }
 
-.progress-empty {
+.progress- {
   width: 3%;
   background-color: #ff1717;
 }

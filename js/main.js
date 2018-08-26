@@ -26,7 +26,13 @@ if(window.openDatabase) {
         return today;
     }; 
 
-    let getProgress = (tasks) => {
+    let timeConverter = time => {
+        let timeResult = (time < 60) ? time + " мин." :
+        ((time % 60) == 0) ? time / 60 + " час." : ~~(time / 60) + "час. " + time % 60 + " мин.";
+        return timeResult;
+    };
+
+    let getProgress = tasks => {
         let allTaskTimeToday = 0, perWidth = 0;
         for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
         for (let i = 0; i < tasks.length; i++) {
@@ -81,7 +87,7 @@ if(window.openDatabase) {
         });
     };
 
-    let addHistotyTasks = (tasks) => {
+    let addHistotyTasks = tasks => {
         db.transaction((tx) => {
             tx.executeSql('SELECT date FROM TaskHistory', [], (sqlTransaction, sqlResultSet) => {
                 let lastDate = sqlResultSet.rows[Object.keys(sqlResultSet.rows)[Object.keys(sqlResultSet.rows).length - 1]];
@@ -129,15 +135,21 @@ if(window.openDatabase) {
                                     </label>
                                 </div>
                             </div>
-                            <div class="task-text">${value.text}</div>
-                            <span>Время которое необходимо затратить: ${value.time}</span>
-                            <span data-id="${value.id}" class="removeTask">&times;</span>
-                            ${value.eternity ? '<span class="infin">&infin;</span>' : ''}
+                            <div class="rigth-task-info">
+                                <div class="rigth-task-info-body">
+                                    <div class="task-text">${value.text}</div>
+                                    <div class="tasl-time">Время которое необходимо затратить: ${timeConverter(value.time)}</div>
+                                </div>
+                                <div class="rigth-task-info-tail">
+                                    ${value.eternity ? '<span class="infin">&infin;</span>' : ''}
+                                    <span data-id="${value.id}" class="removeTask">&times;</span>
+                                </div>
+                            </div>
                         </div>`;
                     }
                     let taskStatusInputs = document.querySelectorAll(".task-status");
                     let taskRemove = document.querySelectorAll(".removeTask");
-                    taskStatusInputs.forEach((value) => {
+                    taskStatusInputs.forEach(value => {
                         value.onchange = () => {
                             db.transaction((tx) => {
                                 tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [+value.checked, getCarrentDate(), value.id]);
@@ -146,7 +158,7 @@ if(window.openDatabase) {
                             }); 
                         }
                     });
-                    taskRemove.forEach((value) => {
+                    taskRemove.forEach(value => {
                         value.onclick = () => {         
                             db.transaction((tx) => {
                                 tx.executeSql('DELETE FROM Task WHERE id=?', [value.dataset.id]);

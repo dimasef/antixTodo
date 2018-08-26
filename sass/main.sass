@@ -92,23 +92,39 @@ select.choose-time-select
 .task-block 
     background: white
     border-radius: 2px
-    width: 600px
-    display: inline-block
-    padding: 12px 22px
+    width: 698px
+    padding: 12px 10px
     overflow: hidden
     display: block
     margin-bottom: 12px
-
-.task-status-block
-    float: left
+    padding-left: 5px;
+    .rigth-task-info
+        float: left
+        width: 87%
+        overflow: hidden
+        &-body
+            float: left
+            width: 90%
+            .tasl-time
+                color: #afafaf
+                font-weight: 300
+        &-tail
+            padding-left: 10px
+            float: left
+            width: 10%
+    .task-status-block
+        float: left
+        width: 12%
+        padding-top: 9px
 
 .removeTask
-    float: right
-    margin-top: -31px
     font-size: 20px
     color: red
     font-family: sans-serif
     cursor: pointer
+    position: relative
+    top: -5px
+    left: 5px
 
 #progressBlock
     background: #ecebeb
@@ -147,10 +163,7 @@ select.choose-time-select
     font-weight: 300
     line-height: 0px
     color: #902ec5
-    float: right
     position: relative
-    top: -16px
-    left: -24px
 
 .eternity-block 
     margin-bottom: 10px
@@ -163,6 +176,7 @@ select.choose-time-select
         float: left
         border: 2px solid #008e82
         border-radius: 2px
+        margin-right: 5px
 
 .progress-full
     width: 100%
@@ -181,7 +195,7 @@ select.choose-time-select
     width: 25%
     background-color: #ff4e16
 
-.progress-empty
+.progress- 
     width: 3%
     background-color: #ff1717
 
