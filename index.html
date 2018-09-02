@@ -23,26 +23,32 @@
             <div>
                 <button id="show-addNewTask-form" class="btn-main-style">Добавить новую</button>
             </div>
-            <div class="addNewTask-form none" id="addNewTask-form" data-id="1">
-                    <h3>Новая задача</h3>
-                    <textarea id="task-text" placeholder="Описание задачи"></textarea>
-                    <input id="task-time" type="number" placeholder="Время выполнения">
-                    <select id="task-time-unit" class="browser-default choose-time-select">
-                        <option value="1">мин</option>
-                        <option value="2">часы</option>
-                    </select>
-                    <div>
-                        <p class="eternity-block">
-                            <label>
-                                <input id="eternity" type="checkbox" />
-                                <span class="dark-color">Ежедневная задача</span>
-                            </label>
-                        <p>
+            <form class="addNewTask-form none" id="addNewTask-form" data-id="1">
+                <h3>Новая задача</h3>
+                <textarea id="task-text" class="valid" data-valid="area" placeholder="Описание задачи"></textarea>
+                <div class="footer-form-block">
+                    <div class="left-create-task-form">
+                        <input id="task-time" class="valid" data-valid="time" type="number" placeholder="Время выполнения">
                     </div>
-                    <div>
-                        <button id="add-new-task" class="btn-main-style">Добавить</button>
+                    <div class="right-create-task-form">
+                        <select id="task-time-unit" data-valid="time-unit" class="valid browser-default choose-time-select">
+                                <option value="1">мин</option>
+                                <option value="2">часы</option>
+                        </select>
                     </div>
                 </div>
+                <div>
+                    <p class="eternity-block">
+                        <label>
+                            <input id="eternity" class="valid" data-valid="checkbox" type="checkbox" />
+                            <span class="dark-color">Ежедневная задача</span>
+                        </label>
+                    <p>
+                </div>
+                <div>
+                    <button id="add-new-task" class="btn-main-style">Добавить</button>
+                </div>
+            </form>
             <div class="taskList" id="task-list">
 
             </div>

@@ -60,6 +60,19 @@ select {
   -webkit-border-radius: 2px;
 }
 
+.footer-form-block {
+  overflow: hidden;
+}
+
+.err {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.bad-valid {
+  border: 1px solid red !important;
+}
+
 .application {
   max-width: 1200px;
   margin: 0 auto;
@@ -69,24 +82,33 @@ select {
   color: #000000;
 }
 
-select.choose-time-select {
+.right-create-task-form {
   display: inline-block;
   width: 39.5%;
+  margin-bottom: 20px;
+  margin-left: 15px;
+}
+
+.right-create-task-form select {
   border-color: white;
   position: relative;
   top: -1px;
   padding-left: 10px;
 }
 
-#task-time {
-  display: inline-block;
+.left-create-task-form {
+  float: left;
   width: 57%;
   margin-right: 8px;
+}
+
+.left-create-task-form input#task-time {
   background: white;
   border-radius: 2px;
   padding-left: 10px;
   height: 43px;
   border: 1px solid #ffffff;
+  box-shadow: none;
 }
 
 .addNewTask-form {

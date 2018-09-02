@@ -15,7 +15,9 @@ if(window.openDatabase) {
             showTakList();
         });
     })();
-
+    function insertAfter(referenceNode, newNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
     let getCarrentDate = () => {
         let today = new Date();
         let dd = today.getDate();
@@ -210,26 +212,121 @@ if(window.openDatabase) {
         });
     })();
 
-    let validateNewTastk = () => {
-        const newTaskTest = document.getElementById("task-text").value,
-            newTaskTime = document.getElementById("task-time").value,
-            newTaskTimeUit = document.getElementById("task-time-unit").value;
-        if (newTaskTest.length != 0 && newTaskTime.length != 0)
-            return true;
-        else return false;
-    };
+    // NEW VALIDATION CLASS
+    const _checkEmptyFilds = Symbol('_checkEmptyFilds');
+    const _checkFullFilds = Symbol('_checkFullFilds');
+    const _renderErrors = Symbol('_renderErrors');
+
+    class Validation {
+        constructor (form) {
+            this.form = form;
+            this.arrToEmptyValidRool = ['area', 'time'];
+            this.statusBed = 0;
+        }
+
+        [_renderErrors] (status, fild, typeErr, messageForFull) {
+            if(status === 'add') {
+                let message = "Поле не должно быть пустым.";
+                let p = document.createElement('p');
+                p.innerText = (typeErr === 'full') ? messageForFull : message;
+                p.classList.add('err');
+
+                let fragment = document.createDocumentFragment();
+                fild.classList.add('bad-valid');
+                fragment.appendChild(p);
+                insertAfter(fild, fragment);
+            }
+            else if(status === 'remove') {
+                fild.classList.remove('bad-valid');
+                this.statusValid = true;
+                if(fild.nextSibling.nodeName !== '#text'){
+                    fild.nextSibling.remove();
+                }
+            }
+        }
+
+        [_checkEmptyFilds] (filds) {
+            let tUnit = filds.find(elem => elem.dataset.valid === 'time-unit');
+            let validRool = this.arrToEmptyValidRool;
+            let alredyValidate = false;
+
+            filds.map(item => {
+                alredyValidate = (item.classList.value.indexOf('bad-valid') > -1);
+                if(validRool.includes(item.dataset.valid) && item.value === '' && !alredyValidate) {
+                    this[_renderErrors] ('add', item, 'empty');
+                } 
+                else if(validRool.includes(item.dataset.valid) && item.value !== '' && alredyValidate) {
+                    this[_renderErrors] ('remove', item);
+                    this[_checkFullFilds](item, tUnit.value);
+                } 
+                else if(validRool.includes(item.dataset.valid) && item.value !== '') {
+                    this[_checkFullFilds](item, tUnit.value);
+                }
+
+                this.statusBed += (item.classList.value.indexOf('bad-valid') > -1) ? 1 : 0;
+            });
+        }
+
+        [_checkFullFilds] (fild, timeUnit) {
+            switch(fild.dataset.valid) {
+                case this.arrToEmptyValidRool[0] : {
+                    if(fild.value.length > 255) 
+                        this[_renderErrors] ('add', fild, 'full', 'Не больше 255 символов.');
+
+                    else {
+                        this[_renderErrors] ('remove', fild);
+                    }
+                    break; 
+                }
+                case this.arrToEmptyValidRool[1] : { 
+                    let tU = timeUnit;
+                    if(!fild.value.match(/^\d+/))
+                        this[_renderErrors] ('add', fild, 'full', 'Допустимы только цифры.');
+
+                    else if(parseInt(fild.value) < 1 && tU === '1')
+                        this[_renderErrors] ('add', fild, 'full', 'Не меньше одной минуты.');
+                    
+                    else if(parseInt(fild.value) <= 0 && tU === '2')
+                        this[_renderErrors] ('add', fild, 'full', 'Вы уже ее выполнели!');
+                    
+                    else if((parseInt(fild.value) > 22 && tU === '2') || (parseInt(fild.value) > 1320 && tU === '1'))
+                        this[_renderErrors] ('add', fild, 'full', 'Возможен летальный исход!');
+
+                    else {
+                        this[_renderErrors] ('remove', fild);
+                    }
+                    break; 
+                }
+            }
+        }
+
+        makeValidation () {
+            let validateFilds = this.form.querySelectorAll(".valid");
+            validateFilds = Object.assign([], validateFilds);
+            this[_checkEmptyFilds](validateFilds);
+            let resultStatus = (this.statusBed === 0) ? true : false;
+            
+            return resultStatus;
+        }
+    }
+
+    // END NEW VALIDATION CLASS
 
     btnNewTask.onclick = () => {
         const addNewTaskForm = document.getElementById("addNewTask-form");
         addNewTaskForm.classList.toggle("none");
     };
 
-    addNewTask.onclick = () => {
-        if(validateNewTastk()) {
+    let addNewTaskForm = document.getElementById("addNewTask-form");
+    
+    addNewTask.onclick = event => {
+        event.preventDefault();
+        let validFormTask = new Validation(addNewTaskForm);
+        
+        if(validFormTask.makeValidation()) {
             let taskTime = document.getElementById("task-time").value;
             const btnT = document.getElementById("task-time-unit"),
-                  eternity = document.getElementById("eternity").checked,
-                  addNewTaskForm = document.getElementById("addNewTask-form");
+                  eternity = document.getElementById("eternity").checked;
 
             taskTime = (btnT.options[btnT.selectedIndex].value === '1') ? taskTime : taskTime * 60;
             db.transaction((tx) => {
@@ -239,7 +336,7 @@ if(window.openDatabase) {
                 showTakList();
             });
         } else {
-            document.getElementById("addNewTask-form").classList.toggle("none");
+            //document.getElementById("addNewTask-form").classList.toggle("none");
         }
     };
 

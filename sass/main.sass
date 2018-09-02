@@ -44,6 +44,13 @@ p, h3
 select 
     -webkit-appearance: none
     -webkit-border-radius: 2px
+.footer-form-block 
+    overflow: hidden
+.err 
+    color: red;
+    margin-bottom: 10px
+.bad-valid 
+    border: 1px solid red !important
 
 .application
     max-width: 1200px
@@ -51,23 +58,28 @@ select
 .dark-color 
     color: #000000
 
-select.choose-time-select 
+.right-create-task-form
     display: inline-block
     width: 39.5%
-    border-color: white
-    position: relative
-    top: -1px
-    padding-left: 10px
+    margin-bottom: 20px
+    margin-left: 15px
+    select
+        border-color: white
+        position: relative
+        top: -1px
+        padding-left: 10px
 
-#task-time 
-    display: inline-block
+.left-create-task-form 
+    float: left
     width: 57%
     margin-right: 8px
-    background: white
-    border-radius: 2px
-    padding-left: 10px
-    height: 43px
-    border: 1px solid #ffffff
+    input#task-time
+        background: white
+        border-radius: 2px
+        padding-left: 10px
+        height: 43px
+        border: 1px solid #ffffff
+        box-shadow: none
 
 .addNewTask-form 
     width: 700px
@@ -97,7 +109,7 @@ select.choose-time-select
     overflow: hidden
     display: block
     margin-bottom: 12px
-    padding-left: 5px;
+    padding-left: 5px
     .rigth-task-info
         float: left
         width: 87%
