@@ -220,7 +220,7 @@ if(window.openDatabase) {
     class Validation {
         constructor (form) {
             this.form = form;
-            this.arrToEmptyValidRool = ['area', 'time'];
+            this.arrValidRool = ['area', 'time'];
             this.statusBed = 0;
         }
 
@@ -247,7 +247,7 @@ if(window.openDatabase) {
 
         [_checkEmptyFilds] (filds) {
             let tUnit = filds.find(elem => elem.dataset.valid === 'time-unit');
-            let validRool = this.arrToEmptyValidRool;
+            let validRool = this.arrValidRool;
             let alredyValidate = false;
 
             filds.map(item => {
@@ -269,7 +269,7 @@ if(window.openDatabase) {
 
         [_checkFullFilds] (fild, timeUnit) {
             switch(fild.dataset.valid) {
-                case this.arrToEmptyValidRool[0] : {
+                case this.arrValidRool[0] : {
                     if(fild.value.length > 255) 
                         this[_renderErrors] ('add', fild, 'full', 'Не больше 255 символов.');
 
@@ -278,7 +278,7 @@ if(window.openDatabase) {
                     }
                     break; 
                 }
-                case this.arrToEmptyValidRool[1] : { 
+                case this.arrValidRool[1] : { 
                     let tU = timeUnit;
                     if(!fild.value.match(/^\d+/))
                         this[_renderErrors] ('add', fild, 'full', 'Допустимы только цифры.');
