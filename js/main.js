@@ -23,10 +23,11 @@ if(window.openDatabase) {
         ((time % 60) == 0) ? time / 60 + " час." : ~~(time / 60) + "час. " + time % 60 + " мин.";
         return timeResult;
     };
-    
+
     let insertAfter = (referenceNode, newNode) => {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     }
+    
 
     class Task {
         constructor(date) {
@@ -45,26 +46,19 @@ if(window.openDatabase) {
             });
         }
 
-        getTasks(fild) {
+        get tasks() {
             return new Promise((resolve, reject) => {
                 db.transaction(tx => {
-                    if(fild) {
-                        tx.executeSql(`SELECT ${fild} FROM Task`,[], (sqlTransaction, sqlResultSet) => 
-                            resolve(sqlResultSet.rows), reject);
-                    }
-                    else {
-                        tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => 
-                            resolve(sqlResultSet.rows), reject);
-                    }
+                    tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => 
+                        resolve(sqlResultSet.rows), reject);
                 });
             });
         }
 
         renderTaslList() {
-            this.getTasks().then(tasks => {
+            this.tasks.then(tasks => {
                 if(tasks.length) {
                     taskList.innerHTML = '';
-                    let value = {};
                     let tableFilds = Array.from(tasks);
                     let fragment = document.createDocumentFragment();
                     tableFilds.map(item => {
@@ -101,12 +95,12 @@ if(window.openDatabase) {
                         taskRemoveBtn.addEventListener('click', () => this.removeTask(item.id) );
                     });
                     taskList.appendChild(fragment);
-    
-                    addHistotyTasks(tasks);
-                    updateHistotyTasks();
+                
+                    history.addHistotyTasks(tasks);
+                    history.updateHistotyTasks();
                 } 
                 else taskList.innerHTML = '';
-                showProgressLine(tasks);
+                this.showProgressLine(tasks);
             });
 
         }
@@ -115,8 +109,8 @@ if(window.openDatabase) {
             let checked = +event.path[0].checked;
             db.transaction(tx => {
                 tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [checked, this.date, id]);
-                showProgressLine(null, true);
-                updateHistotyTasks();
+                this.showProgressLine();
+                history.updateHistotyTasks();
             }); 
         }
 
@@ -135,126 +129,119 @@ if(window.openDatabase) {
                     tx.executeSql('DELETE FROM Task WHERE id=?', [id]);
             });
         }
+
+        showProgressLine(tasks) {
+            let perWidthResult = 0;
+            if(!tasks) {
+                this.tasks.then(updatedTasks => {
+                    perWidthResult = this.getProgress(updatedTasks);
+                });
+            }
+            else perWidthResult = this.getProgress(tasks);
+
+            let progId = document.getElementById("progId");
+            let allWidth = parseInt(progId.style.width);
+            let progress = setInterval(() => {
+                if (allWidth == perWidthResult) {
+                    clearInterval(progress);
+                }
+                else if (allWidth < perWidthResult) {
+                    allWidth++;
+                    progId.style.width = allWidth + '%';
+                }
+                else if (allWidth > perWidthResult) {
+                    allWidth--;
+                    progId.style.width = allWidth + '%';
+                }
+            }, 5);
+        }
+
+        getProgress(tasks) {
+            let allTaskTimeToday = 0, perWidth = 0;
+            for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
+            for (let i = 0; i < tasks.length; i++) {
+                perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
+            }
+            return parseInt(perWidth);
+        };
     }
 
-    let task = new Task(getCarrentDate());
+    class TaskHistory extends Task {
 
-    (function(){
-        db.transaction((tx) => {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
-            tx.executeSql('CREATE TABLE IF NOT EXISTS TaskHistory (date STRING PRIMARY KEY, id_arr_done STRING, id_arr_fail STRING, progress STRING);');
-            //tx.executeSql('DROP TABLE DatesTaskDone;');
-
-            task.renderTaslList();
-        });
-    })();
-
-
-    let getProgress = tasks => {
-        let allTaskTimeToday = 0, perWidth = 0;
-        for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
-        for (let i = 0; i < tasks.length; i++) {
-            perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
-        }
-        return parseInt(perWidth);
-    };
-
-    let getDoneOrFailtTasks = (tasks, status) => {
-        let arrDoneString = '', arrFailString = '', result = '';
-        for (let i = 0; i < tasks.length; i++) {
-            if(tasks.item(i).doneStatus) {
-                arrDoneString += (arrDoneString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
-            } else arrFailString += (arrFailString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
-        }
-        return result = (status === 'fail') ? arrFailString.toString() : arrDoneString.toString();
-    };
-
-    let showProgressLine = (tasks, reload) => {
-        let perWidthResult = {};
-        if(reload) {
-            db.transaction((tx) => {
-                tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
-                    perWidthResult = getProgress(sqlResultSet.rows);
+        addHistotyTasks(tasks) {
+            new Promise((resolve, reject) => {
+                db.transaction((tx) => {
+                    tx.executeSql('SELECT date FROM TaskHistory', [], (sqlTransaction, sqlResultSet) => 
+                    resolve(sqlResultSet.rows), reject);
                 });
-            });
-        }
-        else perWidthResult = getProgress(tasks);
-        let progId = document.getElementById("progId");
-        let allWidth = parseInt(progId.style.width);
-        let progress = setInterval(() => {
-            if (allWidth == perWidthResult) {
-                clearInterval(progress);
-            }
-            else if (allWidth < perWidthResult) {
-                allWidth++;
-                progId.style.width = allWidth + '%';
-            }
-            else if (allWidth > perWidthResult) {
-                allWidth--;
-                progId.style.width = allWidth + '%';
-            }
-        }, 5);
-    };
-
-    let addHistotyTasks = tasks => {
-        db.transaction((tx) => {
-            tx.executeSql('SELECT date FROM TaskHistory', [], (sqlTransaction, sqlResultSet) => {
-                let lastDate = sqlResultSet.rows[Object.keys(sqlResultSet.rows)[Object.keys(sqlResultSet.rows).length - 1]];
-                if(sqlResultSet.rows.length < 1 || lastDate != getCarrentDate()) {
+            }).then(data => {
+                let lastDate = data[Object.keys(data)[Object.keys(data).length - 1]];
+                if(data.length < 1 || lastDate != getCarrentDate()) {
                     db.transaction((tx) => {
-                        tx.executeSql('INSERT INTO TaskHistory (date, id_arr_done, id_arr_fail, progress) VALUES(?,?,?,?);', [getCarrentDate(),
-                        getDoneOrFailtTasks(tasks), getDoneOrFailtTasks(tasks, 'fail'), getProgress(tasks)]);
+                        tx.executeSql('INSERT INTO TaskHistory (date, id_arr_done, id_arr_fail, progress) VALUES(?,?,?,?);', [
+                            getCarrentDate(), this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), super.getProgress(tasks)]);
                     });
                 }
             });
-        });
-    };
+        }
 
-    let updateHistotyTasks = () => {
-        db.transaction((tx) => {
-            tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => {
-                let tasks = sqlResultSet.rows;
+        updateHistotyTasks() {
+            new Promise((resolve, reject) => {
+                db.transaction((tx) => {
+                    tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => 
+                    resolve(sqlResultSet.rows), reject);
+                });
+            }).then(tasks => {
                 db.transaction((tx) => {
                     tx.executeSql('UPDATE TaskHistory SET id_arr_done=?, id_arr_fail=?, progress=?  WHERE date=?', [
-                        getDoneOrFailtTasks(tasks), getDoneOrFailtTasks(tasks, 'fail'), getProgress(tasks), getCarrentDate()]);
+                        this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), super.getProgress(tasks), getCarrentDate()]);
                 });
             });
-        });
-    };
+        }
 
-    (function showHistoryTask () {
-        db.transaction((tx) => {
-            tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
-                if(sqlResultSet.rows.length) {
-                    
-                    let pastTasks = (Object.values(sqlResultSet.rows));
-                    const historyBlock = document.getElementById("history");
-                    historyBlock.innerHTML = '';
-                    let progress = '', success = '', fail = '', successOrFailString = '';
-                    pastTasks.forEach(item => {
-                        success = item.id_arr_done.toString().split(',');
-                        fail = item.id_arr_fail.toString().split(',');
-                        success = (success.length > 1) ? success.length : (success[0] == '') ? 0 : 1; 
-                        fail = (fail.length > 1) ? fail.length : (fail[0] == '') ? 0 : 1; 
-                        successOrFailString = "Выполнено " + success + " задач, невыполено " + fail + " задач.";
-                        progress = (item.progress == 0) ? 'empty' : 
-                            (item.progress > 0 && item.progress <= 30) ? 'low' : 
-                            (item.progress > 30 && item.progress <= 65) ? 'middle':
-                            (item.progress > 65 && item.progress <= 99) ? 'good' : 'full';
-                        
-                        historyBlock.innerHTML += `<div class="history-day-block">
-                            <div class="tooltipped history-progress progress-${progress}" data-position="bottom" 
-                            data-tooltip="${successOrFailString}">
-                                <span>${item.date}</span>
-                            </div>
-                        </div>`;
-                        
-                    });
-                    let instances = M.Tooltip.init(document.querySelectorAll('.tooltipped'));
-                }
+        getDoneOrFailtTasks(tasks, status) {
+            let arrDoneString = '', arrFailString = '', result = '';
+            for (let i = 0; i < tasks.length; i++) {
+                if(tasks.item(i).doneStatus) {
+                    arrDoneString += (arrDoneString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+                } else arrFailString += (arrFailString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+            }
+            return result = (status === 'fail') ? arrFailString.toString() : arrDoneString.toString();
+        }
+
+        showHistoryTask () {
+            db.transaction((tx) => {
+                tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => {
+                    if(sqlResultSet.rows.length) {
+                        let pastTasks = (Object.values(sqlResultSet.rows));
+                        const historyBlock = document.getElementById("history");
+                        historyBlock.innerHTML = '';
+                        let progress = '', success = '', fail = '', successOrFailString = '';
+                        pastTasks.forEach(item => {
+                            success = item.id_arr_done.toString().split(',');
+                            fail = item.id_arr_fail.toString().split(',');
+                            success = (success.length > 1) ? success.length : (success[0] == '') ? 0 : 1; 
+                            fail = (fail.length > 1) ? fail.length : (fail[0] == '') ? 0 : 1; 
+                            successOrFailString = "Выполнено " + success + " задач, невыполено " + fail + " задач.";
+                            progress = (item.progress == 0) ? 'empty' : 
+                                (item.progress > 0 && item.progress <= 30) ? 'low' : 
+                                (item.progress > 30 && item.progress <= 65) ? 'middle':
+                                (item.progress > 65 && item.progress <= 99) ? 'good' : 'full';
+                            
+                            historyBlock.innerHTML += `<div class="history-day-block">
+                                <div class="tooltipped history-progress progress-${progress}" data-position="bottom" 
+                                data-tooltip="${successOrFailString}">
+                                    <span>${item.date}</span>
+                                </div>
+                            </div>`;
+                            
+                        });
+                        let instances = M.Tooltip.init(document.querySelectorAll('.tooltipped'));
+                    }
+                });
             });
-        });
-    })();
+        }
+    }
 
     // NEW VALIDATION CLASS
     const _checkEmptyFilds = Symbol('_checkEmptyFilds');
@@ -354,8 +341,22 @@ if(window.openDatabase) {
             return resultStatus;
         }
     }
-
+    
     // END NEW VALIDATION CLASS
+
+        let task = new Task(getCarrentDate());
+        let history = new TaskHistory();
+        history.showHistoryTask();
+
+        db.transaction((tx) => {
+            tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
+            tx.executeSql('CREATE TABLE IF NOT EXISTS TaskHistory (date STRING PRIMARY KEY, id_arr_done STRING, id_arr_fail STRING, progress STRING);');
+            //tx.executeSql('DROP TABLE TaskHistory;');
+
+            task.renderTaslList();
+        });
+
+
 
     btnNewTask.onclick = () => {
         const addNewTaskForm = document.getElementById("addNewTask-form");
