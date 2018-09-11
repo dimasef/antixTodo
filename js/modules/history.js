@@ -3,6 +3,7 @@
 import { today, db } from './helpers';
 
 class TaskHistory {
+    
     addHistotyTasks(tasks) {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
@@ -22,6 +23,7 @@ class TaskHistory {
             console.log(error); // Error
         });
     }
+
     updateHistotyTasks() {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
