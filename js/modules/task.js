@@ -15,7 +15,6 @@ class Task {
 
     add(taskInfo) {
         let {date, text, time, eternity} = taskInfo;
-        console.log(taskInfo);
         db.transaction(tx => {
             tx.executeSql('INSERT INTO Task (date, text, time, doneStatus, eternity) VALUES(?,?,?,?,?);', 
             [date, text, time, 0, eternity]);
