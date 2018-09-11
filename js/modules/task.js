@@ -1,18 +1,14 @@
 'use strict'
-import TaskHistory from './history';
-const history = new TaskHistory();
 
+import TaskHistory  from './history';
+import { today, timeConverter } from './helpers';
+
+const history = new TaskHistory();
 const db = openDatabase("antiXToDodb","1.0","db", 2097152);
 
-let timeConverter = time => {
-    let timeResult = (time < 60) ? time + " мин." :
-    ((time % 60) == 0) ? time / 60 + " час." : ~~(time / 60) + "час. " + time % 60 + " мин.";
-    return timeResult;
-};
-
 class Task {
-    constructor(date) {
-        this.date = date;
+    constructor() {
+        this.date = today;
 
         this.updateStatusTask = this.updateStatusTask.bind(this);
         this.removeTask = this.removeTask.bind(this);

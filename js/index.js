@@ -1,35 +1,28 @@
 "use strict";
 
-import { db, Task }  from './modules/task';
-import { getCarrentDate, TaskHistory }  from './modules/history';
-import Validation  from './modules/validation';
+import Task         from './modules/task';
+import TaskHistory  from './modules/history';
+import Validation   from './modules/validation';
+import { today }    from './modules/helpers';
 
 if(window.openDatabase) {
 
     const btnNewTask = document.getElementById("show-addNewTask-form");
     const addNewTask = document.getElementById("add-new-task");
     
-    let task = new Task(getCarrentDate());
+    let task = new Task();
     task.renderTaslList();
 
     let history = new TaskHistory();
     history.showHistoryTask();
 
-    // db.transaction((tx) => {
-    //     tx.executeSql('CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, date, text, time, doneStatus, eternity);');
-    //     tx.executeSql('CREATE TABLE IF NOT EXISTS TaskHistory (date STRING PRIMARY KEY, id_arr_done STRING, id_arr_fail STRING, progress STRING);');
-    //     //tx.executeSql('DROP TABLE TaskHistory;');
-
-    // });
-
-    btnNewTask.onclick = () => {
+    btnNewTask.addEventListener('click', () => {
         const addNewTaskForm = document.getElementById("addNewTask-form");
         addNewTaskForm.classList.toggle("none");
-    };
+    });
 
     let addNewTaskForm = document.getElementById("addNewTask-form");
-    
-    addNewTask.onclick = event => {
+    addNewTask.addEventListener('click', () => {
         event.preventDefault();
         let validFormTask = new Validation(addNewTaskForm);
         
@@ -42,16 +35,16 @@ if(window.openDatabase) {
             taskTime = (btnT.options[btnT.selectedIndex].value === '1') ? taskTime : taskTime * 60;
 
             let taskOption = {
-                date: getCarrentDate(),
+                date: today,
                 text: taskText,
                 time: taskTime,
                 eternity: +eternityTask
             };
 
             task.add(taskOption);
-        } else {
-            //document.getElementById("addNewTask-form").classList.toggle("none");
-        }
-    };
+            addNewTaskForm.classList.toggle("none");
+        } 
+    });
+
 
 } else alert('Ваш браузер НЕ підтримує openDatabase.');

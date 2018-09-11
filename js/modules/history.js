@@ -1,17 +1,6 @@
 'use strict'
 
-import { db } from './task';
-
-let getCarrentDate = () => {
-    let today = new Date();
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1;
-    let yyyy = today.getFullYear();
-    if(dd < 10) dd = '0' + dd;
-    if(mm < 10) mm = '0' + mm;
-    today = dd + '.' + mm + '.' + yyyy;
-    return today;
-}
+import { today, db } from './helpers';
 
 class TaskHistory {
     addHistotyTasks(tasks) {
@@ -22,15 +11,15 @@ class TaskHistory {
             });
         }).then(data => {
             let lastDate = data[Object.keys(data)[Object.keys(data).length - 1]];
-            if(data.length < 1 || lastDate != getCarrentDate()) {
+            if(data.length < 1 || lastDate != today()) {
                 db.transaction((tx) => {
                     tx.executeSql('INSERT INTO TaskHistory (date, id_arr_done, id_arr_fail, progress) VALUES(?,?,?,?);', [
-                        getCarrentDate(), this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), this.getProgress(tasks)]);
+                        today(), this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), this.getProgress(tasks)]);
                 });
             }
         })
         .catch(error => {
-            console.log(error); // Error: Not Found
+            console.log(error); // Error
         });
     }
     updateHistotyTasks() {
@@ -42,11 +31,11 @@ class TaskHistory {
         }).then(tasks => {
             db.transaction((tx) => {
                 tx.executeSql('UPDATE TaskHistory SET id_arr_done=?, id_arr_fail=?, progress=?  WHERE date=?', [
-                    this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), this.getProgress(tasks), getCarrentDate()]);
+                    this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), this.getProgress(tasks), today()]);
             });
         })
         .catch(error => {
-            console.log(error); // Error: Not Found
+            console.log(error); // Error
         });
     }
 
@@ -60,11 +49,10 @@ class TaskHistory {
         return result = (status === 'fail') ? arrFailString.toString() : arrDoneString.toString();
     }
 
-
     showHistoryTask () {
         new Promise((resolve, reject) => {
             db.transaction((tx) => {
-                tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[getCarrentDate()], (sqlTransaction, sqlResultSet) => 
+                tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[today()], (sqlTransaction, sqlResultSet) => 
                     resolve(sqlResultSet.rows), reject);
             });
         }).then(history => {
@@ -73,7 +61,7 @@ class TaskHistory {
                 const historyBlock = document.getElementById("history");
                 historyBlock.innerHTML = '';
                 let progress = '', success = '', fail = '', successOrFailString = '';
-                pastTasks.forEach(item => {
+                pastTasks.map(item => {
                     success = item.id_arr_done.toString().split(',');
                     fail = item.id_arr_fail.toString().split(',');
                     success = (success.length > 1) ? success.length : (success[0] == '') ? 0 : 1; 
@@ -96,7 +84,7 @@ class TaskHistory {
             }
         })
         .catch(error => {
-            console.log(error); // Error: Not Found
+            console.log(error); // Error
         });
     }
 
@@ -109,5 +97,5 @@ class TaskHistory {
         return parseInt(perWidth);
     }
 }
-export {getCarrentDate, TaskHistory};
+
 export default TaskHistory;

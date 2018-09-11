@@ -1,9 +1,7 @@
 "use strict";
 
-let insertAfter = (referenceNode, newNode) => {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-};
-// NEW VALIDATION CLASS
+import { insertAfter } from './helpers';
+
 const _checkEmptyFilds = Symbol('_checkEmptyFilds');
 const _checkFullFilds = Symbol('_checkFullFilds');
 const _renderErrors = Symbol('_renderErrors');
