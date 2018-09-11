@@ -5,7 +5,7 @@ import TaskHistory  from './modules/history';
 import Validation   from './modules/validation';
 import { today }    from './modules/helpers';
 
-if(window.openDatabase) {
+if (window.openDatabase) {
 
     const btnNewTask = document.getElementById("show-addNewTask-form");
     const addNewTask = document.getElementById("add-new-task");
@@ -16,35 +16,37 @@ if(window.openDatabase) {
     let history = new TaskHistory();
     history.showHistoryTask();
 
-    btnNewTask.addEventListener('click', () => {
+    btnNewTask.addEventListener("click", () => {
         const addNewTaskForm = document.getElementById("addNewTask-form");
         addNewTaskForm.classList.toggle("none");
     });
 
     let addNewTaskForm = document.getElementById("addNewTask-form");
-    addNewTask.addEventListener('click', () => {
+    addNewTask.addEventListener("click", () => {
         event.preventDefault();
+        console.log(1);
         let validFormTask = new Validation(addNewTaskForm);
         
-        if(validFormTask.makeValidation()) {
-            let taskTime = document.getElementById("task-time").value;
-            const btnT = document.getElementById("task-time-unit"),
-                  eternityTask = document.getElementById("eternity").checked,
-                  taskText = document.getElementById("task-text").value;
+        if (validFormTask.validate) {
 
-            taskTime = (btnT.options[btnT.selectedIndex].value === '1') ? taskTime : taskTime * 60;
+            let eternity = +document.getElementById("eternity").checked,
+                  time = document.getElementById("task-time").value,
+                  text = document.getElementById("task-text").value,
+                  btnT = document.getElementById("task-time-unit");
+
+            time = (btnT.options[btnT.selectedIndex].value === '1') ? time : time * 60;
 
             let taskOption = {
-                date: today,
-                text: taskText,
-                time: taskTime,
-                eternity: +eternityTask
+                date: today(),
+                text,
+                time,
+                eternity
             };
+            console.log(taskOption);
 
             task.add(taskOption);
             addNewTaskForm.classList.toggle("none");
         } 
     });
-
 
 } else alert('Ваш браузер НЕ підтримує openDatabase.');

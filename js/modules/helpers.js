@@ -31,4 +31,9 @@ let timeConverter = time => {
     return timeResult;
 };
 
-export {getCarrentDate as today, timeConverter, insertAfter, db};
+export {
+    getCarrentDate as today, 
+    timeConverter, 
+    insertAfter, 
+    db
+};

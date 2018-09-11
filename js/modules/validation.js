@@ -90,7 +90,7 @@ class Validation {
         }
     }
 
-    makeValidation () {
+    get validate () {
         let validateFilds = this.form.querySelectorAll(".valid");
         validateFilds = Array.from(validateFilds);
         this[_checkEmptyFilds](validateFilds);

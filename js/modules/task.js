@@ -1,14 +1,13 @@
 'use strict'
 
 import TaskHistory  from './history';
-import { today, timeConverter } from './helpers';
+import {db, today, timeConverter } from './helpers';
 
 const history = new TaskHistory();
-const db = openDatabase("antiXToDodb","1.0","db", 2097152);
 
 class Task {
     constructor() {
-        this.date = today;
+        this.date = today();
 
         this.updateStatusTask = this.updateStatusTask.bind(this);
         this.removeTask = this.removeTask.bind(this);
@@ -16,6 +15,7 @@ class Task {
 
     add(taskInfo) {
         let {date, text, time, eternity} = taskInfo;
+        console.log(taskInfo);
         db.transaction(tx => {
             tx.executeSql('INSERT INTO Task (date, text, time, doneStatus, eternity) VALUES(?,?,?,?,?);', 
             [date, text, time, 0, eternity]);
@@ -143,5 +143,4 @@ class Task {
     };
 }
 
-export {db, Task};
 export default Task;
