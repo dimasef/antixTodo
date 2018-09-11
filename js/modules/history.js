@@ -1,6 +1,6 @@
 'use strict'
 
-import db from './task';
+import { db } from './task';
 
 let getCarrentDate = () => {
     let today = new Date();
