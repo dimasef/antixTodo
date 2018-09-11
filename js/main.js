@@ -7,17 +7,6 @@ if(window.openDatabase) {
     const addNewTask = document.getElementById("add-new-task");
     const taskList = document.getElementById("task-list");
 
-    let getCarrentDate = () => {
-        let today = new Date();
-        let dd = today.getDate();
-        let mm = today.getMonth() + 1;
-        let yyyy = today.getFullYear();
-        if(dd < 10) dd = '0' + dd;
-        if(mm < 10) mm = '0' + mm;
-        today = dd + '.' + mm + '.' + yyyy;
-        return today;
-    }; 
-
     let timeConverter = time => {
         let timeResult = (time < 60) ? time + " мин." :
         ((time % 60) == 0) ? time / 60 + " час." : ~~(time / 60) + "час. " + time % 60 + " мин.";
