@@ -295,3 +295,50 @@ select {
   margin-left: 10px;
   margin-right: 10px;
 }
+
+.eternity-check {
+  float: left;
+}
+
+.weekday-settings-block {
+  display: inline-block;
+}
+
+.weekday-settings-manage {
+  padding-left: 50px;
+}
+
+.weekday-settings-items {
+  padding-left: 40px;
+}
+
+.weekday-settings-items .day-item {
+  display: inline-block;
+  margin-left: 7px;
+  margin-right: 7px;
+  border: 2px solid #9612c8;
+  width: 50px;
+  height: 50px;
+  line-height: 46px;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 600;
+  transition: all 400ms ease-in-out;
+}
+
+.weekday-settings-items .opted {
+  background: linear-gradient(-90deg, #4a1b9e, #ce3ee6);
+  background-size: 200% 200%;
+  cursor: pointer;
+  transition: all 400ms ease-in-out;
+  -webkit-animation: Gradient 3s ease infinite;
+  -moz-animation: Gradient 3s ease infinite;
+  -o-animation: Gradient 3s ease infinite;
+  animation: Gradient 3s ease infinite;
+  -webkit-box-shadow: 0px 4px 14px 2px #c36bd2;
+  -moz-box-shadow: 0px 4px 14px 2px #c36bd2;
+  -o-box-shadow: 0px 4px 14px 2px #c36bd2;
+  box-shadow: 0px 4px 14px 2px #c36bd2;
+  color: #ffffff;
+}

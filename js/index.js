@@ -19,12 +19,23 @@ if (window.openDatabase) {
     btnNewTask.addEventListener("click", () => {
         const addNewTaskForm = document.getElementById("addNewTask-form");
         addNewTaskForm.classList.toggle("none");
+
+    });
+
+
+    const weekDayBlock = document.getElementById("weekday");
+    const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
+    
+    weekDayBtn.map(item => {
+        item.addEventListener("click", e => {
+            e.target.classList.toggle("opted");
+        });
     });
 
     let addNewTaskForm = document.getElementById("addNewTask-form");
     addNewTask.addEventListener("click", () => {
         event.preventDefault();
-        console.log(1);
+        console.log("sd");
         let validFormTask = new Validation(addNewTaskForm);
         
         if (validFormTask.validate) {
