@@ -16,26 +16,57 @@ if (window.openDatabase) {
     let history = new TaskHistory();
     history.showHistoryTask();
 
+
+    let manageWeekDay = weekDayBlock => {
+        const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
+        console.log(weekDayBtn);
+        const weekdayAllBtn = weekDayBlock.querySelector(".weekday-all"),
+              weekdayEvenBtn = weekDayBlock.querySelector(".weekday-even"),
+              weekdayRundomBtn = weekDayBlock.querySelector(".weekday-rundom");
+
+        weekDayBtn.map(item => {
+            item.onclick = function() {
+                this.classList.toggle("opted");
+            }
+        });
+
+        weekdayAllBtn.addEventListener("click", function() {
+            let mode = this.dataset.mode;
+            if(mode === '1') {
+                weekDayBtn.map(item => {
+                    item.classList.remove("opted");
+                });
+                this.dataset.mode = '2';
+                this.textContent = 'Выбрать все';
+            } else {
+                weekDayBtn.map(item => {
+                    item.classList.add("opted");
+                });
+                this.dataset.mode = '1';
+                this.textContent = 'Убрать все';
+            }
+        });
+    };
+
     btnNewTask.addEventListener("click", () => {
         const addNewTaskForm = document.getElementById("addNewTask-form");
+        const eternityCheckBox = document.getElementById("eternity");
         addNewTaskForm.classList.toggle("none");
 
-    });
-
-
-    const weekDayBlock = document.getElementById("weekday");
-    const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
-    
-    weekDayBtn.map(item => {
-        item.addEventListener("click", e => {
-            e.target.classList.toggle("opted");
+        eternityCheckBox.addEventListener("change", function() {
+            const weekDayBlock = document.getElementById("weekday");
+            if(this.checked) {
+                weekDayBlock.classList.toggle("none");
+                manageWeekDay(weekDayBlock);
+            } 
+            else weekDayBlock.classList.toggle("none");
         });
     });
+    
 
     let addNewTaskForm = document.getElementById("addNewTask-form");
     addNewTask.addEventListener("click", () => {
         event.preventDefault();
-        console.log("sd");
         let validFormTask = new Validation(addNewTaskForm);
         
         if (validFormTask.validate) {

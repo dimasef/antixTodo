@@ -98,8 +98,8 @@ select
         &:focus
             outline: none
 
-.none
-    display: none
+.empty-buffer
+    height: 40px;
 
 .task-block 
     background: white
@@ -226,6 +226,13 @@ select
 
 .weekday-settings-manage
     padding-left: 50px
+    padding-bottom: 7px
+    span
+        border: 2px solid #a614d0
+        border-radius: 2px
+        padding: 0px 7px
+        cursor: pointer
+        margin-right: 7px
 
 .weekday-settings-items
     padding-left: 40px
@@ -252,3 +259,6 @@ select
         @include animationGradient(3s)
         @include mainBtnShadow(#c36bd2)
         color: #ffffff
+
+.none
+    display: none
