@@ -306,7 +306,8 @@ select {
 
 .weekday-settings-manage {
   padding-left: 50px;
-  padding-bottom: 7px;
+  padding-bottom: 10px;
+  padding-top: 3px;
 }
 
 .weekday-settings-manage span {

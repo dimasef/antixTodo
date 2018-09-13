@@ -19,7 +19,7 @@ if (window.openDatabase) {
 
     let manageWeekDay = weekDayBlock => {
         const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
-        console.log(weekDayBtn);
+        
         const weekdayAllBtn = weekDayBlock.querySelector(".weekday-all"),
               weekdayEvenBtn = weekDayBlock.querySelector(".weekday-even"),
               weekdayRundomBtn = weekDayBlock.querySelector(".weekday-rundom");
