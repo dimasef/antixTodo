@@ -16,10 +16,10 @@ if (window.openDatabase) {
     let history = new TaskHistory();
     history.showHistoryTask();
 
-
+    
     let manageWeekDay = weekDayBlock => {
         const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
-        
+
         const weekdayAllBtn = weekDayBlock.querySelector(".weekday-all"),
               weekdayEvenBtn = weekDayBlock.querySelector(".weekday-even"),
               weekdayRundomBtn = weekDayBlock.querySelector(".weekday-rundom");
