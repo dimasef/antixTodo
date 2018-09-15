@@ -16,7 +16,7 @@ if (window.openDatabase) {
     let history = new TaskHistory();
     history.showHistoryTask();
 
-    
+
     let manageWeekDay = weekDayBlock => {
         const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
 
@@ -45,6 +45,36 @@ if (window.openDatabase) {
                 this.dataset.mode = '1';
                 this.textContent = 'Убрать все';
             }
+        });
+
+        weekdayEvenBtn.addEventListener("click", function() {
+            let mode = this.dataset.mode;
+            if(mode === '1') {
+                weekDayBtn.map((item, index) => {
+                    if((index % 2) == 0)
+                        item.classList.remove("opted");
+                    else item.classList.add("opted");
+                });
+                this.dataset.mode = '2';
+                this.textContent = 'Нечетные';
+            } else {
+                weekDayBtn.map((item, index) => {
+                    if((index % 2) == 0)
+                        item.classList.add("opted");
+                    else item.classList.remove("opted");
+                });
+                this.dataset.mode = '1';
+                this.textContent = 'Четные';
+            }
+        });
+
+        weekdayRundomBtn.addEventListener("click", () => {
+            let rundom = 0;
+            weekDayBtn.map(item => {
+                rundom = Math.floor(Math.random() * 2);
+                if(rundom) item.classList.remove("opted");
+                else item.classList.add("opted");
+            });
         });
     };
 
