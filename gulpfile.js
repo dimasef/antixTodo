@@ -1,9 +1,11 @@
 let gulp = require('gulp'),
-    sass = require('gulp-sass');
+    sass = require('gulp-sass'),
+    sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('sass', function() {
     return gulp.src(['sass/**/*.sass', 'sass/**/*.scss'])
         .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
+        .pipe(sourcemaps.write('/map'))
         .pipe(gulp.dest('css'));
 });
 

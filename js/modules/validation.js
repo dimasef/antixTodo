@@ -4,6 +4,7 @@ import { insertAfter } from './helpers';
 
 const _checkEmptyFilds = Symbol('_checkEmptyFilds');
 const _checkFullFilds = Symbol('_checkFullFilds');
+const _checkDays = Symbol('_checkFullFilds');
 const _renderErrors = Symbol('_renderErrors');
 
 class Validation {
@@ -21,7 +22,7 @@ class Validation {
             p.classList.add('err');
 
             let fragment = document.createDocumentFragment();
-            fild.classList.add('bad-valid');
+            (!fild.isSameNode(this.form)) ? fild.classList.add('bad-valid') : '';
             fragment.appendChild(p);
             insertAfter(fild, fragment);
         }
@@ -32,6 +33,14 @@ class Validation {
                 fild.nextSibling.remove();
             }
         }
+    }
+
+    [_checkDays] () { 
+        let daysArr = Array.from(this.form.querySelectorAll(".opted"));
+        if(daysArr.length === 0) {
+            this[_renderErrors] ('add', this.form, 'full', 'Необходимо выбрать хотя бы 1 день.');
+        }
+        else this[_renderErrors] ('remove', this.form);
     }
 
     [_checkEmptyFilds] (filds) {
@@ -94,6 +103,7 @@ class Validation {
         let validateFilds = this.form.querySelectorAll(".valid");
         validateFilds = Array.from(validateFilds);
         this[_checkEmptyFilds](validateFilds);
+        this[_checkDays]();
         let resultStatus = (this.statusBed === 0) ? true : false;
         
         return resultStatus;

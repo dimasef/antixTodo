@@ -9,6 +9,7 @@ if (window.openDatabase) {
 
     const btnNewTask = document.getElementById("show-addNewTask-form");
     const addNewTask = document.getElementById("add-new-task");
+    const weekDayBlock = document.getElementById("weekday");
     
     let task = new Task();
     task.renderTaslList();
@@ -18,6 +19,7 @@ if (window.openDatabase) {
 
 
     let manageWeekDay = weekDayBlock => {
+        let result = '';
         const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
 
         const weekdayAllBtn = weekDayBlock.querySelector(".weekday-all"),
@@ -83,14 +85,13 @@ if (window.openDatabase) {
         const eternityCheckBox = document.getElementById("eternity");
         addNewTaskForm.classList.toggle("none");
 
-        eternityCheckBox.addEventListener("change", function() {
-            const weekDayBlock = document.getElementById("weekday");
+        eternityCheckBox.onchange = function() {
             if(this.checked) {
                 weekDayBlock.classList.toggle("none");
                 manageWeekDay(weekDayBlock);
             } 
             else weekDayBlock.classList.toggle("none");
-        });
+        }
     });
     
 
@@ -100,7 +101,7 @@ if (window.openDatabase) {
         let validFormTask = new Validation(addNewTaskForm);
         
         if (validFormTask.validate) {
-
+            let existenceDays = '';
             let eternity = +document.getElementById("eternity").checked,
                   time = document.getElementById("task-time").value,
                   text = document.getElementById("task-text").value,
@@ -108,11 +109,20 @@ if (window.openDatabase) {
 
             time = (btnT.options[btnT.selectedIndex].value === '1') ? time : time * 60;
 
+            const weekDayItem = Array.from(weekDayBlock.querySelectorAll(".day-item"));
+
+            if(eternity) {
+                weekDayItem.map(item => {
+                    existenceDays += item.classList.contains('opted') ? item.dataset.dayid : '';
+                });
+            } else existenceDays = today('dayId');
+
             let taskOption = {
                 date: today(),
                 text,
                 time,
-                eternity
+                eternity,
+                existenceDays
             };
             console.log(taskOption);
 

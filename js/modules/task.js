@@ -14,10 +14,10 @@ class Task {
     }
 
     add(taskInfo) {
-        let {date, text, time, eternity} = taskInfo;
+        let {date, text, time, eternity, existenceDays} = taskInfo;
         db.transaction(tx => {
-            tx.executeSql('INSERT INTO Task (date, text, time, doneStatus, eternity) VALUES(?,?,?,?,?);', 
-            [date, text, time, 0, eternity]);
+            tx.executeSql('INSERT INTO Task (date, text, time, doneStatus, eternity, existence_days) VALUES(?,?,?,?,?,?);', 
+            [date, text, time, 0, eternity, existenceDays]);
             this.renderTaslList();
         });
     }
@@ -39,37 +39,40 @@ class Task {
                 let tableFilds = Array.from(tasks);
                 let fragment = document.createDocumentFragment();
                 tableFilds.map(item => {
-                    let html = document.createElement('span');
-                    if(item.date != this.date) {
-                        this.resetEternityTask(item.id, item.eternity);
+                    let existenceDays = item.existence_days.toString();
+                    if(existenceDays.includes(today('dayId'))) {
+                        let html = document.createElement('span');
+                        if(item.date != this.date) {
+                            this.resetEternityTask(item.id, item.eternity);
+                        }
+                        html.innerHTML += `<div class="task-block" data-id="${item.id}">
+                            <div class="task-status-block">
+                                <div class="switch">
+                                    <label>
+                                        <input id="${item.id}" type="checkbox" class="task-status" ${item.doneStatus ? 'checked' : ''}>
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="rigth-task-info">
+                                <div class="rigth-task-info-body">
+                                    <div class="task-text">${item.text}</div>
+                                    <div class="tasl-time">Время которое необходимо затратить: ${timeConverter(item.time)}</div>
+                                </div>
+                                <div class="rigth-task-info-tail">
+                                    ${item.eternity ? '<span class="infin">&infin;</span>' : ''}
+                                    <span data-id="${item.id}" class="removeTask">&times;</span>
+                                </div>
+                            </div>
+                        </div>`;
+                        fragment.appendChild(html);
+    
+                        let taskStatus = html.querySelector('.task-status'),
+                            taskRemoveBtn = html.querySelector('.removeTask');
+    
+                        taskStatus.addEventListener('click', () => this.updateStatusTask(item.id) );
+                        taskRemoveBtn.addEventListener('click', () => this.removeTask(item.id) );
                     }
-                    html.innerHTML += `<div class="task-block" data-id="${item.id}">
-                        <div class="task-status-block">
-                            <div class="switch">
-                                <label>
-                                    <input id="${item.id}" type="checkbox" class="task-status" ${item.doneStatus ? 'checked' : ''}>
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="rigth-task-info">
-                            <div class="rigth-task-info-body">
-                                <div class="task-text">${item.text}</div>
-                                <div class="tasl-time">Время которое необходимо затратить: ${timeConverter(item.time)}</div>
-                            </div>
-                            <div class="rigth-task-info-tail">
-                                ${item.eternity ? '<span class="infin">&infin;</span>' : ''}
-                                <span data-id="${item.id}" class="removeTask">&times;</span>
-                            </div>
-                        </div>
-                    </div>`;
-                    fragment.appendChild(html);
-
-                    let taskStatus = html.querySelector('.task-status'),
-                        taskRemoveBtn = html.querySelector('.removeTask');
-
-                    taskStatus.addEventListener('click', () => this.updateStatusTask(item.id) );
-                    taskRemoveBtn.addEventListener('click', () => this.removeTask(item.id) );
                 });
                 taskList.appendChild(fragment);
             
@@ -134,7 +137,9 @@ class Task {
 
     getProgress(tasks) {
         let allTaskTimeToday = 0, perWidth = 0;
-        for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
+        for (let i = 0; i < tasks.length; i++) {
+            allTaskTimeToday += (tasks.item(i).existence_days.toString().includes(today('dayId'))) ? parseInt(tasks.item(i).time) : 0;
+        }
         for (let i = 0; i < tasks.length; i++) {
             perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
         }

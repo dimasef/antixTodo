@@ -44,9 +44,12 @@ class TaskHistory {
     getDoneOrFailtTasks(tasks, status) {
         let arrDoneString = '', arrFailString = '', result = '';
         for (let i = 0; i < tasks.length; i++) {
-            if(tasks.item(i).doneStatus) {
-                arrDoneString += (arrDoneString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
-            } else arrFailString += (arrFailString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+            if(tasks.item(i).existence_days.toString().includes(today('dayId'))) {
+                if(tasks.item(i).doneStatus) {
+                    arrDoneString += (arrDoneString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+                } else arrFailString += (arrFailString === '') ? tasks.item(i).id : ',' + tasks.item(i).id;
+            }
+
         }
         return result = (status === 'fail') ? arrFailString.toString() : arrDoneString.toString();
     }
@@ -92,7 +95,9 @@ class TaskHistory {
 
     getProgress(tasks) {
         let allTaskTimeToday = 0, perWidth = 0;
-        for (let i = 0; i < tasks.length; i++) {allTaskTimeToday += parseInt(tasks.item(i).time);}
+        for (let i = 0; i < tasks.length; i++) {
+            allTaskTimeToday += (tasks.item(i).existence_days.toString().includes(today('dayId'))) ? parseInt(tasks.item(i).time) : 0;
+        }
         for (let i = 0; i < tasks.length; i++) {
             perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
         }

@@ -96,6 +96,10 @@ select {
   padding-left: 10px;
 }
 
+.right-create-task-form select:focus {
+  outline: none;
+}
+
 .left-create-task-form {
   float: left;
   width: 57%;
