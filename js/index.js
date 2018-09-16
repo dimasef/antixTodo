@@ -32,7 +32,7 @@ if (window.openDatabase) {
             }
         });
 
-        weekdayAllBtn.addEventListener("click", function() {
+        weekdayAllBtn.onclick = function() {
             let mode = this.dataset.mode;
             if(mode === '1') {
                 weekDayBtn.map(item => {
@@ -47,9 +47,9 @@ if (window.openDatabase) {
                 this.dataset.mode = '1';
                 this.textContent = 'Убрать все';
             }
-        });
+        };
 
-        weekdayEvenBtn.addEventListener("click", function() {
+        weekdayEvenBtn.onclick = function() {
             let mode = this.dataset.mode;
             if(mode === '1') {
                 weekDayBtn.map((item, index) => {
@@ -68,7 +68,7 @@ if (window.openDatabase) {
                 this.dataset.mode = '1';
                 this.textContent = 'Четные';
             }
-        });
+        };
 
         weekdayRundomBtn.addEventListener("click", () => {
             let rundom = 0;
@@ -128,6 +128,7 @@ if (window.openDatabase) {
 
             task.add(taskOption);
             addNewTaskForm.classList.toggle("none");
+            M.toast({html: 'Создана ноавая задача!', displayLength: 1600, classes: 'antix-toast'});
         } 
     });
 
