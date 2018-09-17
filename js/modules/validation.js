@@ -22,12 +22,13 @@ class Validation {
             p.classList.add('err');
 
             let fragment = document.createDocumentFragment();
-            (!fild.isSameNode(this.form)) ? fild.classList.add('bad-valid') : '';
+            (!fild.isSameNode(this.form)) ? fild.classList.add('bad-valid') :  fild.classList.add('hidden-bad-valid');
             fragment.appendChild(p);
             insertAfter(fild, fragment);
         }
         else if(status === 'remove') {
             fild.classList.remove('bad-valid');
+            fild.classList.remove('hidden-bad-valid');
             this.statusValid = true;
             if(fild.nextSibling.nodeName !== '#text'){
                 fild.nextSibling.remove();
@@ -39,6 +40,7 @@ class Validation {
         let daysArr = Array.from(this.form.querySelectorAll(".opted"));
         if(daysArr.length === 0) {
             this[_renderErrors] ('add', this.form, 'full', 'Необходимо выбрать хотя бы 1 день.');
+            ++this.statusBed;
         }
         else this[_renderErrors] ('remove', this.form);
     }
@@ -102,8 +104,8 @@ class Validation {
     get validate () {
         let validateFilds = this.form.querySelectorAll(".valid");
         validateFilds = Array.from(validateFilds);
-        this[_checkEmptyFilds](validateFilds);
         this[_checkDays]();
+        this[_checkEmptyFilds](validateFilds);
         let resultStatus = (this.statusBed === 0) ? true : false;
         
         return resultStatus;
