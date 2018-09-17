@@ -106,8 +106,14 @@ select
         &:focus
             outline: none
 
+
 .empty-buffer
     height: 40px;
+.task-body
+    width: 748px
+    &:hover > .insert_comment
+        opacity: 1
+        @include transitionProgress(.30s)
 
 .task-block 
     background: white
@@ -115,9 +121,11 @@ select
     width: 698px
     padding: 12px 10px
     overflow: hidden
-    display: block
+    display: inline-block
     margin-bottom: 12px
     padding-left: 5px
+    float: left
+
     .rigth-task-info
         float: left
         width: 87%
@@ -274,8 +282,23 @@ select
 
 .none
     display: none
-
+.task-body 
+    overflow: hidden
 .antix-toast 
     background: #00a89a
     box-shadow: antiquewhite
     box-shadow: 0px 4px 14px 2px #1cad9eab
+
+.insert_comment
+    opacity: 0
+    @include transitionProgress(.30s)
+    background: url(../img/comment_add.svg)
+    display: inline-block
+    width: 33px
+    height: 33px
+    background-repeat: no-repeat
+    float: left
+    cursor: pointer
+    margin:
+        left: 10px
+        top: -2px

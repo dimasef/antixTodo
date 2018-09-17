@@ -128,7 +128,6 @@ if (window.openDatabase) {
 
             task.add(taskOption);
             addNewTaskForm.classList.toggle("none");
-            M.toast({html: 'Создана ноавая задача!', displayLength: 1600, classes: 'antix-toast'});
         } 
     });
 

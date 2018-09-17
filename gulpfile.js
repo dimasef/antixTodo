@@ -4,8 +4,9 @@ let gulp = require('gulp'),
 
 gulp.task('sass', function() {
     return gulp.src(['sass/**/*.sass', 'sass/**/*.scss'])
+        .pipe(sourcemaps.init())
         .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
-        .pipe(sourcemaps.write('/map'))
+        .pipe(sourcemaps.write('map'))
         .pipe(gulp.dest('css'));
 });
 

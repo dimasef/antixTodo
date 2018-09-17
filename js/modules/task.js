@@ -19,6 +19,7 @@ class Task {
             tx.executeSql('INSERT INTO Task (date, text, time, doneStatus, eternity, existence_days) VALUES(?,?,?,?,?,?);', 
             [date, text, time, 0, eternity, existenceDays]);
             this.renderTaslList();
+            M.toast({html: 'Создана ноавая задача!', displayLength: 1600, classes: 'antix-toast'});
         });
     }
 
@@ -45,25 +46,28 @@ class Task {
                         if(item.date != this.date) {
                             this.resetEternityTask(item.id, item.eternity);
                         }
-                        html.innerHTML += `<div class="task-block" data-id="${item.id}">
-                            <div class="task-status-block">
-                                <div class="switch">
-                                    <label>
-                                        <input id="${item.id}" type="checkbox" class="task-status" ${item.doneStatus ? 'checked' : ''}>
-                                        <span class="lever"></span>
-                                    </label>
+                        html.innerHTML += `<div class="task-body">
+                            <div class="task-block" data-id="${item.id}">
+                                <div class="task-status-block">
+                                    <div class="switch">
+                                        <label>
+                                            <input id="${item.id}" type="checkbox" class="task-status" ${item.doneStatus ? 'checked' : ''}>
+                                            <span class="lever"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="rigth-task-info">
+                                    <div class="rigth-task-info-body">
+                                        <div class="task-text">${item.text}</div>
+                                        <div class="tasl-time">Время которое необходимо затратить: ${timeConverter(item.time)}</div>
+                                    </div>
+                                    <div class="rigth-task-info-tail">
+                                        ${item.eternity ? '<span class="infin">&infin;</span>' : ''}
+                                        <span data-id="${item.id}" class="removeTask">&times;</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="rigth-task-info">
-                                <div class="rigth-task-info-body">
-                                    <div class="task-text">${item.text}</div>
-                                    <div class="tasl-time">Время которое необходимо затратить: ${timeConverter(item.time)}</div>
-                                </div>
-                                <div class="rigth-task-info-tail">
-                                    ${item.eternity ? '<span class="infin">&infin;</span>' : ''}
-                                    <span data-id="${item.id}" class="removeTask">&times;</span>
-                                </div>
-                            </div>
+                            ${item.doneStatus ? '<i class="insert_comment"></i>' : ''}
                         </div>`;
                         fragment.appendChild(html);
     
@@ -94,6 +98,9 @@ class Task {
             tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [checked, this.date, id]);
             this.showProgressLine();
             history.updateHistotyTasks();
+            setTimeout(() => {
+                this.renderTaslList();
+            }, 100)
         }); 
     }
 
