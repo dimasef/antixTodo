@@ -1,7 +1,6 @@
 'use strict'
 
 import TaskHistory  from './history';
-import TaskCommnets  from './commnets';
 import { db, today, timeConverter, calcProgress } from './helpers';
 
 const history = new TaskHistory();
@@ -78,11 +77,14 @@ class Task {
     
                         taskStatus.addEventListener('click', () => this.updateStatusTask(item.id) );
                         taskRemoveBtn.addEventListener('click', () => this.removeTask(item.id) );
-                        insertCommentBtn.onclick = function() {
-                            const modal = document.getElementById("antix-modal-for-comments");
-                            const taskId = this.previousElementSibling.dataset.id;
-                            modal.querySelector(".task-comment").dataset.taskid = taskId;
+                        if(insertCommentBtn !== null){
+                            insertCommentBtn.onclick = function() {
+                                const modal = document.getElementById("antix-modal-for-comments");
+                                const taskId = this.previousElementSibling.dataset.id;
+                                modal.querySelector(".task-comment").dataset.taskid = taskId;
+                            }
                         }
+    
                     }
                 });
                 taskList.appendChild(fragment);
