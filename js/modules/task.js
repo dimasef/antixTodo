@@ -1,7 +1,8 @@
 'use strict'
 
 import TaskHistory  from './history';
-import {db, today, timeConverter } from './helpers';
+import TaskCommnets  from './commnets';
+import { db, today, timeConverter, calcProgress } from './helpers';
 
 const history = new TaskHistory();
 
@@ -67,19 +68,24 @@ class Task {
                                     </div>
                                 </div>
                             </div>
-                            ${item.doneStatus ? '<i class="insert_comment"></i>' : ''}
+                            ${item.doneStatus ? '<a href="#antix-modal-for-comments" class="modal-trigger insert_comment"></a>' : ''}
                         </div>`;
                         fragment.appendChild(html);
-    
+                        
                         let taskStatus = html.querySelector('.task-status'),
-                            taskRemoveBtn = html.querySelector('.removeTask');
+                            taskRemoveBtn = html.querySelector('.removeTask'),
+                            insertCommentBtn = html.querySelector('.insert_comment');
     
                         taskStatus.addEventListener('click', () => this.updateStatusTask(item.id) );
                         taskRemoveBtn.addEventListener('click', () => this.removeTask(item.id) );
+                        insertCommentBtn.onclick = function() {
+                            const modal = document.getElementById("antix-modal-for-comments");
+                            const taskId = this.previousElementSibling.dataset.id;
+                            modal.querySelector(".task-comment").dataset.taskid = taskId;
+                        }
                     }
                 });
                 taskList.appendChild(fragment);
-            
                 history.addHistotyTasks(tasks);
                 history.updateHistotyTasks();
             } 
@@ -98,6 +104,7 @@ class Task {
             tx.executeSql('UPDATE Task SET doneStatus=?, date=? WHERE id=?', [checked, this.date, id]);
             this.showProgressLine();
             history.updateHistotyTasks();
+            //For animate update switch
             setTimeout(() => {
                 this.renderTaslList();
             }, 100)
@@ -123,7 +130,7 @@ class Task {
     showProgressLine() {
         let perWidthResult = 0;
         this.tasks.then(updatedTasks => {
-            perWidthResult = this.getProgress(updatedTasks);
+            perWidthResult = calcProgress(updatedTasks);
             let progId = document.getElementById("progId");
             let allWidth = parseInt(progId.style.width);
             let progress = setInterval(() => {
@@ -142,16 +149,6 @@ class Task {
         });
     }
 
-    getProgress(tasks) {
-        let allTaskTimeToday = 0, perWidth = 0;
-        for (let i = 0; i < tasks.length; i++) {
-            allTaskTimeToday += (tasks.item(i).existence_days.toString().includes(today('dayId'))) ? parseInt(tasks.item(i).time) : 0;
-        }
-        for (let i = 0; i < tasks.length; i++) {
-            perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
-        }
-        return parseInt(perWidth);
-    };
 }
 
 export default Task;

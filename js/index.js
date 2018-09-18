@@ -2,14 +2,16 @@
 
 import Task         from './modules/task';
 import TaskHistory  from './modules/history';
+import TaskCommnets  from './modules/commnets';
 import Validation   from './modules/validation';
-import { today }    from './modules/helpers';
+import { today, insertAfter }    from './modules/helpers';
 
 if (window.openDatabase) {
 
     const btnNewTask = document.getElementById("show-addNewTask-form");
     const addNewTask = document.getElementById("add-new-task");
     const weekDayBlock = document.getElementById("weekday");
+    const commentModal = document.getElementById("antix-modal-for-comments");
     
     let task = new Task();
     task.renderTaslList();
@@ -17,7 +19,15 @@ if (window.openDatabase) {
     let history = new TaskHistory();
     history.showHistoryTask();
 
+    document.addEventListener('DOMContentLoaded', function() {
+        let instance = M.Modal.init(commentModal, {
+            onOpenEnd: () => {
+                let taskId = commentModal.querySelector(".task-comment").dataset.taskid;
+                new TaskCommnets(taskId);
+            },
+        });
 
+    });
     let manageWeekDay = weekDayBlock => {
         let result = '';
         const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
@@ -130,5 +140,8 @@ if (window.openDatabase) {
             addNewTaskForm.classList.toggle("none");
         } 
     });
+
+
+
 
 } else alert('Ваш браузер НЕ підтримує openDatabase.');

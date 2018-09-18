@@ -1,6 +1,6 @@
 'use strict'
 
-import { today, db } from './helpers';
+import { today, db, calcProgress } from './helpers';
 
 class TaskHistory {
     
@@ -15,7 +15,7 @@ class TaskHistory {
             if(data.length < 1 || lastDate != today()) {
                 db.transaction((tx) => {
                     tx.executeSql('INSERT INTO TaskHistory (date, id_arr_done, id_arr_fail, progress) VALUES(?,?,?,?);', [
-                        today(), this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), this.getProgress(tasks)]);
+                        today(), this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), calcProgress(tasks)]);
                 });
             }
         })
@@ -33,7 +33,7 @@ class TaskHistory {
         }).then(tasks => {
             db.transaction((tx) => {
                 tx.executeSql('UPDATE TaskHistory SET id_arr_done=?, id_arr_fail=?, progress=?  WHERE date=?', [
-                    this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), this.getProgress(tasks), today()]);
+                    this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), calcProgress(tasks), today()]);
             });
         })
         .catch(error => {
@@ -91,17 +91,6 @@ class TaskHistory {
         .catch(error => {
             console.log(error); // Error
         });
-    }
-
-    getProgress(tasks) {
-        let allTaskTimeToday = 0, perWidth = 0;
-        for (let i = 0; i < tasks.length; i++) {
-            allTaskTimeToday += (tasks.item(i).existence_days.toString().includes(today('dayId'))) ? parseInt(tasks.item(i).time) : 0;
-        }
-        for (let i = 0; i < tasks.length; i++) {
-            perWidth += (tasks.item(i).doneStatus) ? ((parseInt(tasks.item(i).time) * 100) / allTaskTimeToday) : 0;
-        }
-        return parseInt(perWidth);
     }
 }
 
