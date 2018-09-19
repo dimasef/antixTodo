@@ -19,14 +19,14 @@ if (window.openDatabase) {
     let history = new TaskHistory();
     history.showHistoryTask();
 
+    let comment = new TaskCommnets();
+
     document.addEventListener('DOMContentLoaded', function() {
         let instance = M.Modal.init(commentModal, {
             onOpenEnd: () => {
                 let taskId = commentModal.querySelector(".task-comment").dataset.taskid;
-                new TaskCommnets(taskId);
             },
         });
-
     });
     let manageWeekDay = weekDayBlock => {
         let result = '';
@@ -141,7 +141,16 @@ if (window.openDatabase) {
         } 
     });
 
-
-
+    let addCommentBtn = commentModal.querySelector(".save-comment");
+    addCommentBtn.addEventListener("click", () => {
+        let text = commentModal.querySelector(".task-comment").value;
+        let taskId = commentModal.querySelector(".task-comment").dataset.taskid;
+        let commentObj = {
+            date: today(),
+            text,
+            taskId
+        }
+        comment.init(commentObj);
+    });
 
 } else alert('Ваш браузер НЕ підтримує openDatabase.');
