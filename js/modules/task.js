@@ -88,7 +88,7 @@ class Task {
                     }
                 });
                 taskList.appendChild(fragment);
-                history.addHistotyTasks(tasks);
+                history.addHistoryTasks(tasks);
                 history.updateHistotyTasks();
             } 
             else taskList.innerHTML = '';

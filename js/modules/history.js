@@ -4,16 +4,16 @@ import { today, db, calcProgress } from './helpers';
 
 class TaskHistory {
     
-    addHistotyTasks(tasks) {
+    addHistoryTasks(tasks) {
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            db.transaction(tx => {
                 tx.executeSql('SELECT date FROM TaskHistory', [], (sqlTransaction, sqlResultSet) => 
-                resolve(sqlResultSet.rows), reject);
+                    resolve(sqlResultSet.rows), reject);
             });
         }).then(data => {
-            let lastDate = data[Object.keys(data)[Object.keys(data).length - 1]];
+            const lastDate = data[Object.keys(data)[Object.keys(data).length - 1]];
             if(data.length < 1 || lastDate != today()) {
-                db.transaction((tx) => {
+                db.transaction(tx => {
                     tx.executeSql('INSERT INTO TaskHistory (date, id_arr_done, id_arr_fail, progress) VALUES(?,?,?,?);', [
                         today(), this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), calcProgress(tasks)]);
                 });
@@ -26,12 +26,12 @@ class TaskHistory {
 
     updateHistotyTasks() {
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            db.transaction(tx => {
                 tx.executeSql('SELECT * FROM Task',[], (sqlTransaction, sqlResultSet) => 
                 resolve(sqlResultSet.rows), reject);
             });
         }).then(tasks => {
-            db.transaction((tx) => {
+            db.transaction(tx => {
                 tx.executeSql('UPDATE TaskHistory SET id_arr_done=?, id_arr_fail=?, progress=?  WHERE date=?', [
                     this.getDoneOrFailtTasks(tasks), this.getDoneOrFailtTasks(tasks, 'fail'), calcProgress(tasks), today()]);
             });
@@ -56,13 +56,13 @@ class TaskHistory {
 
     showHistoryTask () {
         new Promise((resolve, reject) => {
-            db.transaction((tx) => {
+            db.transaction(tx => {
                 tx.executeSql('SELECT * FROM TaskHistory WHERE date!=?',[today()], (sqlTransaction, sqlResultSet) => 
                     resolve(sqlResultSet.rows), reject);
             });
         }).then(history => {
             if(history.length) {
-                let pastTasks = (Object.values(history));
+                const pastTasks = (Object.values(history));
                 const historyBlock = document.getElementById("history");
                 historyBlock.innerHTML = '';
                 let progress = '', success = '', fail = '', successOrFailString = '';
