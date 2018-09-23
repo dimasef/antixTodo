@@ -28,6 +28,7 @@ if (window.openDatabase) {
             },
         });
     });
+    
     let manageWeekDay = weekDayBlock => {
         let result = '';
         const weekDayBtn = Array.from(weekDayBlock.querySelectorAll(".day-item"));
@@ -153,4 +154,4 @@ if (window.openDatabase) {
         comment.init(commentObj);
     });
 
-} else alert('Ваш браузер НЕ підтримує openDatabase.');
+} else alert('Скачай хром друг!');
