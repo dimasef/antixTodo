@@ -177,6 +177,10 @@ select {
   width: 90%;
 }
 
+.task-block .rigth-task-info-body .task-text {
+  word-break: break-word;
+}
+
 .task-block .rigth-task-info-body .tasl-time {
   color: #afafaf;
   font-weight: 300;
